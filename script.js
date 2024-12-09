@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const acquisitionDateInput = document.getElementById('acquisitionDate');
+    const transferDateInput = document.getElementById('transferDate');
+    const holdingYearsDisplay = document.getElementById('holdingYearsDisplay');
     const calculateButton = document.getElementById('calculateButton');
 
     // 숫자 입력에 콤마 추가
@@ -10,46 +13,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 계산 버튼 클릭 이벤트
-    calculateButton.addEventListener('click', () => {
-        // 입력 값 가져오기
-        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
-        const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10);
-        const expenses = parseInt(document.getElementById('expenses').value.replace(/,/g, '') || '0', 10);
-        const holdingYears = parseInt(document.getElementById('holdingYears').value || '0', 10);
+    // 보유 기간 자동 계산
+    const calculateHoldingYears = () => {
+        const acquisitionDate = new Date(acquisitionDateInput.value);
+        const transferDate = new Date(transferDateInput.value);
 
-        // 양도차익 계산
-        const profit = transferPrice - acquisitionPrice - expenses;
-        if (profit <= 0) {
-            document.getElementById('result').innerHTML = `<p>양도차익이 없거나 손실입니다.</p>`;
+        if (isNaN(acquisitionDate) || isNaN(transferDate)) {
+            holdingYearsDisplay.value = '날짜를 입력하세요.';
             return;
         }
 
-        // 장기보유특별공제 적용
-        const longTermDeductionRate = Math.min(holdingYears * 0.06, 0.4); // 최대 40% 공제
+        const diffInMilliseconds = transferDate - acquisitionDate;
+        const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365); // 1년 단위로 계산
+        holdingYearsDisplay.value = diffInYears.toFixed(2) + '년';
+    };
+
+    acquisitionDateInput.addEventListener('change', calculateHoldingYears);
+    transferDateInput.addEventListener('change', calculateHoldingYears);
+
+    // 계산 버튼 클릭 이벤트
+    calculateButton.addEventListener('click', () => {
+        const propertyType = document.getElementById('propertyType').value;
+        const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
+        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
+        const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10);
+        const expenses = parseInt(document.getElementById('expenses').value.replace(/,/g, '') || '0', 10);
+        const holdingYears = parseFloat(holdingYearsDisplay.value) || 0;
+
+        // 양도차익 계산
+        const profit = transferPrice - acquisitionPrice - expenses;
+
+        // 비과세 판단
+        if (singleHouseExemption && propertyType === 'house' && transferPrice <= 1200000000) {
+            document.getElementById('result').innerHTML = `<p>1세대 1주택 비과세 조건 충족으로 세금이 없습니다.</p>`;
+            return;
+        }
+
+        // 기본 세율 및 중과세
+        let taxRate = 0;
+        let surcharge = 0;
+        if (propertyType === 'house') {
+            taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율
+            surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세
+        } else if (propertyType === 'land' || propertyType === 'forest') {
+            taxRate = 0.15;
+        } else if (propertyType === 'commercial') {
+            taxRate = 0.2;
+        }
+
+        // 장기보유특별공제
+        const longTermDeductionRate = propertyType === 'house' ? Math.min(holdingYears * 0.04, 0.4) : Math.min(holdingYears * 0.03, 0.3);
         const taxableProfit = profit * (1 - longTermDeductionRate);
 
         // 양도소득세 계산
-        const taxBrackets = [
-            { limit: 12000000, rate: 0.06, deduction: 0 },
-            { limit: 46000000, rate: 0.15, deduction: 1080000 },
-            { limit: 88000000, rate: 0.24, deduction: 5220000 },
-            { limit: 150000000, rate: 0.35, deduction: 14900000 },
-            { limit: 300000000, rate: 0.38, deduction: 19400000 },
-            { limit: 500000000, rate: 0.40, deduction: 25400000 },
-            { limit: Infinity, rate: 0.42, deduction: 35400000 },
-        ];
-
-        let tax = 0;
-        for (const bracket of taxBrackets) {
-            if (taxableProfit > bracket.limit) {
-                tax += (bracket.limit - (taxBrackets[0].limit || 0)) * bracket.rate;
-            } else {
-                tax += (taxableProfit - (bracket.limit || 0)) * bracket.rate - bracket.deduction;
-                break;
-            }
-        }
-        tax = Math.max(0, tax);
+        const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
 
         // 부가세 계산
         const educationTax = Math.floor(tax * 0.1); // 지방교육세
@@ -59,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 결과 출력
         document.getElementById('result').innerHTML = `
             <h3>계산 결과</h3>
+            <p>보유 기간: ${holdingYears.toFixed(2)} 년</p>
             <p>양도차익: ${profit.toLocaleString()} 원</p>
             <p>장기보유특별공제: ${(longTermDeductionRate * 100).toFixed(1)}%</p>
             <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
