@@ -75,14 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // 기본 세율 및 중과세
         let taxRate = 0;
         let surcharge = 0;
-        if (propertyType === 'house') {
-            taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율
-            surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세
-        } else if (propertyType === 'land' || propertyType === 'forest') {
-            taxRate = 0.15;
-        } else if (propertyType === 'commercial') {
-            taxRate = 0.2;
-        }
+        let longTermDeductionRate = 0;
+
+       if (propertyType === 'house') {
+          taxRate = regulatedArea ? 0.2 : 0.1;
+          surcharge = regulatedArea ? 0.1 : 0;
+          longTermDeductionRate = Math.min(holdingYears * 0.04, 0.4); // 최대 40%
+      } else if (propertyType === 'landForest') {
+         taxRate = 0.15;
+         longTermDeductionRate = Math.min(holdingYears * 0.03, 0.3); // 최대 30%
+      } else if (propertyType === 'commercial') {
+         taxRate = 0.2;
+         longTermDeductionRate = Math.min(holdingYears * 0.03, 0.3); // 최대 30%
+      }
 
         // 장기보유특별공제
         const longTermDeductionRate = propertyType === 'house' ? Math.min(holdingYears * 0.04, 0.4) : Math.min(holdingYears * 0.03, 0.3);
