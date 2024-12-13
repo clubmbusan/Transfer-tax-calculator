@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const propertyTypeSelect = document.getElementById('propertyType');
+    const regulatedAreaField = document.getElementById('regulatedAreaField');
+    const singleHouseExemptionField = document.getElementById('singleHouseExemptionField');
     const acquisitionDateInput = document.getElementById('acquisitionDate');
     const transferDateInput = document.getElementById('transferDate');
     const holdingYearsDisplay = document.getElementById('holdingYearsDisplay');
@@ -12,6 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : '';
         }
     });
+
+    // 부동산 유형에 따른 필드 표시/숨김
+    const updateFieldsByPropertyType = () => {
+        const propertyType = propertyTypeSelect.value;
+        if (propertyType === 'commercial') {
+            // 상업용 부동산: 조정대상지역 및 1세대 1주택 여부 숨김
+            regulatedAreaField.style.display = 'none';
+            singleHouseExemptionField.style.display = 'none';
+        } else {
+            // 다른 유형: 필드 표시
+            regulatedAreaField.style.display = 'block';
+            singleHouseExemptionField.style.display = 'block';
+        }
+    };
+
+    // 초기화 및 이벤트 연결
+    propertyTypeSelect.addEventListener('change', updateFieldsByPropertyType);
+    updateFieldsByPropertyType(); // 초기 상태 설정
 
     // 보유 기간 자동 계산
     const calculateHoldingYears = () => {
@@ -33,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
-        const propertyType = document.getElementById('propertyType').value;
+        const propertyType = propertyTypeSelect.value;
         const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
         const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
         const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
