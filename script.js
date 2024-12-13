@@ -6,8 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const transferDateInput = document.getElementById('transferDate'); // 양도일 입력
     const holdingYearsDisplay = document.getElementById('holdingYearsDisplay'); // 보유 기간 표시
     const calculateButton = document.getElementById('calculateButton'); // 계산 버튼
-
-    // 필요경비 관련 변수 추가
     const toggleButton = document.getElementById('toggleExpensesButton'); // 필요경비 입력 버튼
     const expensesContainer = document.getElementById('expensesContainer'); // 필요경비 입력 필드 컨테이너
     const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 총 필요경비 표시
@@ -71,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isExpensesContainerVisible = !isExpensesContainerVisible; // 상태 토글
         expensesContainer.style.display = isExpensesContainerVisible ? 'block' : 'none'; // 상태에 따라 표시/숨김
     });
-});
 
     // 필요경비 항목 체크박스 상태에 따른 입력 필드 활성화/비활성화
     document.querySelectorAll('#expensesList input[type="checkbox"]').forEach((checkbox) => {
@@ -95,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
         return totalExpenses;
     };
+
+    // 필요경비 합산 버튼 이벤트 추가
+    const calculateExpensesButton = document.getElementById('calculateExpensesButton');
+    if (calculateExpensesButton) {
+        calculateExpensesButton.addEventListener('click', calculateExpenses);
+    }
+});
 
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
