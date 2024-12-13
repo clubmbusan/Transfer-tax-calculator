@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>양도세 계산기 (2024년 기준)</title>
+    <title>양도소득세 계산기 (2024년 기준)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,38 +13,38 @@
             <!-- 부동산 유형 -->
             <label for="propertyType">부동산 유형:</label>
             <select id="propertyType">
-                <option value="house" selected>주택</option> <!-- 초기값은 주택 -->
+                <option value="house" selected>주택</option>
                 <option value="commercial">상업용 부동산</option>
                 <option value="landForest">토지/임야</option>
             </select>
 
-           <!-- 조정대상지역 여부 필드 -->
-   <div id="regulatedAreaField">
-      <label for="regulatedArea">조정대상지역 여부:</label>
-      <select id="regulatedArea">
-          <option value="no" selected>아니오</option>
-          <option value="yes">예</option>
-      </select>
-  </div>
+            <!-- 조정대상지역 여부 -->
+            <div id="regulatedAreaField">
+                <label for="regulatedArea">조정대상지역 여부:</label>
+                <select id="regulatedArea">
+                    <option value="no" selected>아니오</option>
+                    <option value="yes">예</option>
+                </select>
+            </div>
 
-  <!-- 1세대 1주택 여부 필드 -->
-  <div id="singleHouseExemptionField">
-      <label for="singleHouseExemption">1세대 1주택 여부:</label>
-      <select id="singleHouseExemption">
-          <option value="no" selected>아니오</option>
-          <option value="yes">예</option>
-      </select>
-  </div>
+            <!-- 1세대 1주택 여부 -->
+            <div id="singleHouseExemptionField">
+                <label for="singleHouseExemption">1세대 1주택 여부:</label>
+                <select id="singleHouseExemption">
+                    <option value="no" selected>아니오</option>
+                    <option value="yes">예</option>
+                </select>
+            </div>
 
             <!-- 취득 정보 -->
-            <label for="acquisitionDate">취득 시점:</label>
+            <label for="acquisitionDate">취득 시점:<br><small>(부동산을 실제 소유하게 된 시점. 주로 등기일 기준)</small></label>
             <input type="date" id="acquisitionDate">
 
             <label for="acquisitionPrice">취득가액 (원):</label>
             <input type="text" id="acquisitionPrice" placeholder="예: 500,000,000">
 
             <!-- 양도 정보 -->
-            <label for="transferDate">양도 시점:</label>
+            <label for="transferDate">양도 시점:<br><small>(부동산 처분일. 주로 잔금청산일 기준)</small></label>
             <input type="date" id="transferDate">
 
             <label for="transferPrice">양도가액 (원):</label>
