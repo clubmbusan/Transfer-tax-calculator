@@ -49,14 +49,15 @@ button:hover {
 /* 버튼 컨테이너 정렬 */
 #buttonContainer {
     display: flex;
-    gap: 10px; /* 버튼 간격 */
+    gap: 10px;
     margin-top: 15px;
-    justify-content: space-between; /* 가로 정렬 */
+    justify-content: space-between; /* 버튼 간격 설정 */
 }
 
+/* 버튼 크기 통일 */
 button#toggleAcquisitionButton,
 button#toggleExpensesButton {
-    width: 48%; /* 버튼 각각의 너비 */
+    width: 100%; /* 모든 버튼을 동일한 너비로 설정 */
 }
 
 /* 모달 창 스타일 */
