@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
-        if (['acquisitionPrice', 'transferPrice', 'expenses'].includes(target.id)) {
+        if (['acquisitionPrice', 'transferPrice'].includes(target.id)) {
             const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
         }
@@ -86,15 +86,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 필요경비 합산 계산
-    calculateButton.addEventListener('click', () => {
+    const calculateExpenses = () => {
         let totalExpenses = 0;
         document.querySelectorAll('#expensesList input[type="number"]').forEach((input) => {
             totalExpenses += parseInt(input.value || '0', 10); // 입력값 합산
         });
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
-    });
-});
-      
+        return totalExpenses;
+    };
+
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
         const propertyType = propertyTypeSelect.value; // 부동산 유형
@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
         const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10); // 취득가액
         const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10); // 양도가액
-        const expenses = parseInt(document.getElementById('expenses').value.replace(/,/g, '') || '0', 10); // 필요 경비
+        const expenses = calculateExpenses(); // 필요 경비 합산 계산
         const holdingYears = parseFloat(holdingYearsDisplay.value) || 0; // 보유 기간
-
+        
         // 양도차익 계산
         const profit = transferPrice - acquisitionPrice - expenses; // 양도가액 - 취득가액 - 필요 경비
 
