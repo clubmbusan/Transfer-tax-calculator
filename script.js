@@ -63,12 +63,86 @@ document.addEventListener('DOMContentLoaded', () => {
     acquisitionDateInput.addEventListener('change', calculateHoldingYears); // 취득일 변경 시 계산
     transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
 
-    // 필요경비 입력 버튼 토글
-    toggleButton.addEventListener('click', (event) => {
-        event.preventDefault(); // 버튼 기본 동작 방지
-        isExpensesContainerVisible = !isExpensesContainerVisible; // 상태 토글
-        expensesContainer.style.display = isExpensesContainerVisible ? 'block' : 'none'; // 상태에 따라 표시/숨김
+   document.addEventListener('DOMContentLoaded', () => {
+    const propertyTypeSelect = document.getElementById('propertyType'); // 부동산 유형 선택
+    const regulatedAreaField = document.getElementById('regulatedAreaField'); // 조정대상지역 여부 필드
+    const singleHouseExemptionField = document.getElementById('singleHouseExemptionField'); // 1세대 1주택 여부 필드
+    const calculateButton = document.getElementById('calculateButton'); // 계산 버튼
+
+    // 취득가액 모달 관련 변수
+    const acquisitionModal = document.getElementById('acquisitionModal');
+    const toggleAcquisitionButton = document.getElementById('toggleAcquisitionButton');
+    const closeAcquisitionModal = document.getElementById('closeAcquisitionModal');
+    const saveAcquisitionButton = document.getElementById('saveAcquisition');
+    const totalAcquisitionDisplay = document.getElementById('totalAcquisitionDisplay');
+
+    // 필요경비 모달 관련 변수
+    const expensesModal = document.getElementById('expensesModal');
+    const toggleExpensesButton = document.getElementById('toggleExpensesButton');
+    const closeExpensesModal = document.getElementById('closeExpensesModal');
+    const saveExpensesButton = document.getElementById('saveExpenses');
+    const totalExpensesDisplay = document.getElementById('totalExpensesDisplay');
+
+    // 취득가액 모달 열기/닫기
+    toggleAcquisitionButton.addEventListener('click', () => {
+        acquisitionModal.style.display = 'block';
     });
+    closeAcquisitionModal.addEventListener('click', () => {
+        acquisitionModal.style.display = 'none';
+    });
+
+    // 필요경비 모달 열기/닫기
+    toggleExpensesButton.addEventListener('click', () => {
+        expensesModal.style.display = 'block';
+    });
+    closeExpensesModal.addEventListener('click', () => {
+        expensesModal.style.display = 'none';
+    });
+
+    // 취득가액 저장
+    saveAcquisitionButton.addEventListener('click', () => {
+        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
+        totalAcquisitionDisplay.textContent = `총 취득가액: ${acquisitionPrice.toLocaleString()} 원`;
+        acquisitionModal.style.display = 'none';
+    });
+
+    // 필요경비 저장
+    saveExpensesButton.addEventListener('click', () => {
+        let totalExpenses = 0;
+        document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
+            const value = input.value.replace(/,/g, '');
+            totalExpenses += parseInt(value || '0', 10);
+        });
+        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
+        expensesModal.style.display = 'none';
+    });
+
+    // 체크박스 상태에 따른 입력 필드 활성화/비활성화
+    document.querySelectorAll('#expensesModal input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', (event) => {
+            const amountField = document.getElementById(`${event.target.id}Amount`);
+            amountField.disabled = !event.target.checked;
+            if (!event.target.checked) {
+                amountField.value = ''; // 체크 해제 시 초기화
+            }
+        });
+    });
+
+    // 계산 버튼 클릭 이벤트
+    calculateButton.addEventListener('click', () => {
+        const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10);
+        const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10);
+        const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10);
+
+        const profit = transferPrice - acquisitionPrice - expenses; // 양도가액 - 취득가액 - 필요경비
+
+        // 결과 출력 (예제: 총 양도차익만 표시)
+        document.getElementById('result').innerHTML = `
+            <h3>계산 결과</h3>
+            <p>양도차익: ${profit.toLocaleString()} 원</p>
+        `;
+    });
+});
 
     // 필요경비 항목 체크박스 상태에 따른 입력 필드 활성화/비활성화
     document.querySelectorAll('#expensesList input[type="checkbox"]').forEach((checkbox) => {
