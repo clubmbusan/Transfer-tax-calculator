@@ -18,10 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveExpensesButton = document.getElementById('saveExpenses'); // 필요경비 저장 버튼
     const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 필요경비 표시
 
+    // 상태 변수
+    let isAcquisitionModalOpen = false; // 취득가액 모달 상태
+    let isExpensesModalOpen = false; // 필요경비 모달 상태
+
     // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
-        if (['acquisitionPrice', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
+        if (['acquisitionPrice', 'acquisitionCost', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
             const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
         }
@@ -64,42 +68,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
-    // 취득가액 모달 열기
-    toggleAcquisitionButton.addEventListener('click', () => {
-        acquisitionModal.style.display = 'block';
+    // 모달 열기/닫기 공통 함수
+    const openModal = (modal) => {
+        modal.style.display = 'block';
+    };
+
+    const closeModal = (modal) => {
+        modal.style.display = 'none';
+    };
+
+    // 취득가액 모달 열기/닫기
+    toggleAcquisitionButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (isAcquisitionModalOpen) {
+            closeModal(acquisitionModal);
+        } else {
+            openModal(acquisitionModal);
+        }
+        isAcquisitionModalOpen = !isAcquisitionModalOpen;
     });
 
-    // 취득가액 모달 닫기
-    closeAcquisitionModal.addEventListener('click', () => {
-        acquisitionModal.style.display = 'none';
+    closeAcquisitionModal.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeModal(acquisitionModal);
+        isAcquisitionModalOpen = false;
     });
 
     // 취득가액 저장
     saveAcquisitionButton.addEventListener('click', () => {
-        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
-        totalAcquisitionDisplay.textContent = `총 취득가액: ${acquisitionPrice.toLocaleString()} 원`;
-        acquisitionModal.style.display = 'none';
+        // 취득가액과 취득 경비 입력 필드 가져오기
+        const acquisitionPriceElement = document.getElementById('acquisitionPrice');
+        const acquisitionCostElement = document.getElementById('acquisitionCost');
+
+        // 값 읽기, 없으면 0으로 처리
+        const acquisitionPrice = acquisitionPriceElement ? parseInt(acquisitionPriceElement.value.replace(/,/g, '') || '0', 10) : 0;
+        const acquisitionCost = acquisitionCostElement ? parseInt(acquisitionCostElement.value.replace(/,/g, '') || '0', 10) : 0;
+
+        // 총 취득가액 계산
+        const totalAcquisition = acquisitionPrice + acquisitionCost;
+
+        // 결과 표시
+        totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisition.toLocaleString()} 원`;
+
+        // 모달 닫기
+        closeModal(acquisitionModal);
+        isAcquisitionModalOpen = false;
     });
 
-    // 필요경비 모달 열기
-    toggleExpensesButton.addEventListener('click', () => {
-        expensesModal.style.display = 'block';
+    // 필요경비 모달 열기/닫기
+    toggleExpensesButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (isExpensesModalOpen) {
+            closeModal(expensesModal);
+        } else {
+            openModal(expensesModal);
+        }
+        isExpensesModalOpen = !isExpensesModalOpen;
     });
 
-    // 필요경비 모달 닫기
-    closeExpensesModal.addEventListener('click', () => {
-        expensesModal.style.display = 'none';
+    closeExpensesModal.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeModal(expensesModal);
+        isExpensesModalOpen = false;
     });
 
     // 필요경비 저장
     saveExpensesButton.addEventListener('click', () => {
         let totalExpenses = 0;
         document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-            const value = input.value.replace(/,/g, ''); // 콤마 제거
-            totalExpenses += parseInt(value || '0', 10); // 합산
+            const value = input.value.replace(/,/g, '');
+            totalExpenses += parseInt(value || '0', 10);
         });
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
-        expensesModal.style.display = 'none';
+        closeModal(expensesModal);
+        isExpensesModalOpen = false;
     });
 
     // 체크박스 상태에 따른 입력 필드 활성화/비활성화
@@ -113,11 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // 계산 버튼 클릭 이벤트
+       // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
         const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
         const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
-        const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10); // 양도가액
+        const transferPrice = parseInt(document.getElementById('transferPrice')?.value.replace(/,/g, '') || '0', 10); // 양도가액
+        const holdingYears = parseFloat(holdingYearsDisplay?.value || '0'); // 보유 기간
 
         // 양도차익 계산
         const profit = transferPrice - acquisitionPrice - expenses;
@@ -132,18 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
 
             if (singleHouseExemption) {
-                longTermDeductionRate = holdingYearsDisplay.value >= 2 ? Math.min(holdingYearsDisplay.value * 0.04, 0.8) : 0;
+                longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
             } else {
-                longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.02, 0.3) : 0;
+                longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
             }
 
             taxRate = regulatedArea ? 0.2 : 0.1;
             surcharge = regulatedArea ? 0.1 : 0;
         } else if (propertyTypeSelect.value === 'landForest') {
-            longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.03, 0.3) : 0;
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
             taxRate = 0.15;
         } else if (propertyTypeSelect.value === 'commercial') {
-            longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.03, 0.3) : 0;
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
             taxRate = 0.2;
         }
 
@@ -173,3 +216,4 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     });
 });
+ 
