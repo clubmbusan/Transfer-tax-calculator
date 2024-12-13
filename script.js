@@ -16,17 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 부동산 유형에 따른 필드 표시/숨김
+    // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
         const propertyType = propertyTypeSelect.value;
-        if (propertyType === 'commercial') {
-            // 상업용 부동산: 조정대상지역 및 1세대 1주택 여부 숨김
-            regulatedAreaField.style.display = 'none';
-            singleHouseExemptionField.style.display = 'none';
-        } else {
-            // 다른 유형: 필드 표시
+
+        if (propertyType === 'house') {
+            // 주택: 관련 필드 표시
             regulatedAreaField.style.display = 'block';
             singleHouseExemptionField.style.display = 'block';
+        } else if (propertyType === 'commercial' || propertyType === 'landForest') {
+            // 상업용 부동산 및 토지/임야: 관련 필드 숨김
+            regulatedAreaField.style.display = 'none';
+            singleHouseExemptionField.style.display = 'none';
         }
     };
 
