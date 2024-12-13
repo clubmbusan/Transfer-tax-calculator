@@ -85,21 +85,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 필요경비 합산 계산
     const calculateExpenses = () => {
-        let totalExpenses = 0;
-        document.querySelectorAll('#expensesList input[type="number"]').forEach((input) => {
-            totalExpenses += parseInt(input.value.replace(/,/g, '') || '0', 10); // 입력값 합산
-        });
-        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
-        return totalExpenses;
-    };
+    let totalExpenses = 0;
+    document.querySelectorAll('#expensesList input[type="text"]').forEach((input) => {
+        // 콤마 제거 후 숫자로 변환
+        const value = input.value.replace(/,/g, ''); // 콤마 제거
+        totalExpenses += parseInt(value || '0', 10); // 숫자로 변환 후 합산
+    });
+    // 합산된 결과 표시
+    totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
+    return totalExpenses;
+  };
 
     // 필요경비 합산 버튼 이벤트 추가
     const calculateExpensesButton = document.getElementById('calculateExpensesButton');
     if (calculateExpensesButton) {
-        calculateExpensesButton.addEventListener('click', (event) => {
-            event.preventDefault(); // 버튼 기본 동작 방지
-            calculateExpenses(); // 필요경비 계산
-        });
+       calculateExpensesButton.addEventListener('click', (event) => {
+           event.preventDefault(); // 버튼 기본 동작 방지
+          calculateExpenses(); // 필요경비 합산 계산 호출
+       });
     }
 
     // 계산 버튼 클릭 이벤트
