@@ -85,13 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (propertyType === 'house') {
             taxRate = regulatedArea ? 0.2 : 0.1; // 조정대상지역 여부에 따른 기본 세율
             surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-            longTermDeductionRate = Math.min(holdingYears * 0.04, 0.4); // 최대 40% 공제
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.04, 0.4) : 0; // 3년 이상 공제율 계산
         } else if (propertyType === 'landForest') {
             taxRate = 0.15; // 토지/임야 기본 세율
-            longTermDeductionRate = Math.min(holdingYears * 0.03, 0.3); // 최대 30% 공제
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0; // 3년 이상 공제율 계산
         } else if (propertyType === 'commercial') {
             taxRate = 0.2; // 상가 기본 세율
-            longTermDeductionRate = Math.min(holdingYears * 0.03, 0.3); // 최대 30% 공제
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0; // 3년 이상 공제율 계산
         }
 
         // 과세표준 계산 (장기보유특별공제 반영)
