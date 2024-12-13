@@ -18,7 +18,7 @@
                 <option value="landForest">토지/임야</option>
             </select>
 
-            <!-- 조정대상지역 여부 -->
+            <!-- 조정대상지역 및 1세대 1주택 여부 -->
             <div id="regulatedAreaField">
                 <label for="regulatedArea">조정대상지역 여부:</label>
                 <select id="regulatedArea">
@@ -26,8 +26,6 @@
                     <option value="yes">예</option>
                 </select>
             </div>
-
-            <!-- 1세대 1주택 여부 -->
             <div id="singleHouseExemptionField">
                 <label for="singleHouseExemption">1세대 1주택 여부:</label>
                 <select id="singleHouseExemption">
@@ -36,71 +34,57 @@
                 </select>
             </div>
 
-            <!-- 취득가액 버튼 -->
-<button id="toggleAcquisitionButton" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-    취득가액 입력
-</button>
-
-<!-- 취득가액 모달 -->
-<div id="acquisitionModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h3>취득가액 입력</h3>
-    <label for="acquisitionDate">취득 시점:</label>
-    <input type="date" id="acquisitionDate"><br>
-    <label for="acquisitionPrice">취득 금액 (원):</label>
-    <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
-    <button id="saveAcquisition" style="background-color: #4CAF50; color: white;">저장</button>
-    <button id="closeAcquisitionModal" style="background-color: #ccc; color: black;">닫기</button>
-</div>
-<p id="totalAcquisitionDisplay" style="margin-top: 10px; font-weight: bold;">총 취득가액: 0 원</p>
-            
             <!-- 양도 정보 -->
-            <label for="transferDate">양도 시점:<br><small>부동산 처분일. 주로 잔금청산일 기준</small></label>
-            <input type="date" id="transferDate">
+            <div id="transferInfo">
+                <label for="transferDate">양도 시점:</label>
+                <input type="date" id="transferDate">
+                <label for="transferPrice">양도가액 (원):</label>
+                <input type="text" id="transferPrice" placeholder="금액 입력">
+            </div>
 
-            <label for="transferPrice">양도가액 (원):</label>
-            <input type="text" id="transferPrice" placeholder="예: 1,000,000,000">
+           <!-- 취득가액 버튼 -->
+<button id="toggleAcquisitionButton" type="button">취득가액 입력</button>
+<div id="acquisitionModal" class="modal">
+    <h3>취득가액 입력</h3>
+    <label for="acquisitionDate">취득일:</label>
+    <input type="date" id="acquisitionDate"><br>
+    <label for="acquisitionPrice">취득가액 (원):</label>
+    <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
+    <label for="acquisitionCost">취득 경비 (원):</label>
+    <input type="text" id="acquisitionCost" placeholder="경비 입력"><br>
+    <button id="saveAcquisition" type="button">저장</button>
+    <button id="closeAcquisitionModal" type="button">닫기</button>
+</div>
+<p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
 
             <!-- 필요경비 버튼 -->
-<button id="toggleExpensesButton" style="background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-    필요경비 입력
-</button>
+            <button id="toggleExpensesButton" type="button">필요경비 입력</button>
+            <div id="expensesModal" class="modal">
+                <h3>필요경비 입력</h3>
+                <ul>
+                    <li>
+                        <input type="checkbox" id="acquisitionTax">
+                        <label for="acquisitionTax">취득세</label>
+                        <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력" disabled>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="brokerageFee">
+                        <label for="brokerageFee">중개수수료</label>
+                        <input type="text" id="brokerageFeeAmount" placeholder="금액 입력" disabled>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="legalFee">
+                        <label for="legalFee">법무사 수수료</label>
+                        <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
+                    </li>
+                </ul>
+                <button id="saveExpenses" type="button">저장</button>
+                <button id="closeExpensesModal" type="button">닫기</button>
+            </div>
+            <p id="totalExpensesDisplay">총 필요경비: 0 원</p>
 
-<!-- 필요경비 모달 -->
-<div id="expensesModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-    <h3>필요경비 입력</h3>
-    <ul style="list-style: none; padding: 0;">
-        <li>
-            <input type="checkbox" id="acquisitionTax">
-            <label for="acquisitionTax">취득세</label>
-            <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력" disabled>
-        </li>
-        <li>
-            <input type="checkbox" id="brokerageFee">
-            <label for="brokerageFee">중개수수료</label>
-            <input type="text" id="brokerageFeeAmount" placeholder="금액 입력" disabled>
-        </li>
-        <li>
-            <input type="checkbox" id="legalFee">
-            <label for="legalFee">법무사 수수료</label>
-            <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
-        </li>
-        <li>
-            <input type="checkbox" id="remodelingCost">
-            <label for="remodelingCost">리모델링 비용</label>
-            <input type="text" id="remodelingCostAmount" placeholder="금액 입력" disabled>
-        </li>
-    </ul>
-    <button id="saveExpenses" style="background-color: #007BFF; color: white;">저장</button>
-    <button id="closeExpensesModal" style="background-color: #ccc; color: black;">닫기</button>
-</div>
-<p id="totalExpensesDisplay" style="margin-top: 10px; font-weight: bold;">총 필요경비: 0 원</p>
-            
-            <!-- 자동 계산된 보유 기간 -->
-            <label for="holdingYearsDisplay">보유 기간 (년):</label>
-            <input type="text" id="holdingYearsDisplay" readonly placeholder="자동 계산됨">
-
-            <!-- 계산하기 버튼 -->
-            <button type="button" id="calculateButton">계산하기</button>
+            <!-- 계산 버튼 -->
+            <button id="calculateButton" type="button">계산하기</button>
         </form>
 
         <!-- 결과 -->
