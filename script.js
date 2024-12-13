@@ -6,16 +6,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const transferDateInput = document.getElementById('transferDate'); // 양도일 입력
     const holdingYearsDisplay = document.getElementById('holdingYearsDisplay'); // 보유 기간 표시
     const calculateButton = document.getElementById('calculateButton'); // 계산 버튼
-    const toggleButton = document.getElementById('toggleExpensesButton'); // 필요경비 입력 버튼
-    const expensesContainer = document.getElementById('expensesContainer'); // 필요경비 입력 필드 컨테이너
-    const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 총 필요경비 표시
-
-    let isExpensesContainerVisible = false; // 필요경비 필드 표시 여부 상태
+    const toggleAcquisitionButton = document.getElementById('toggleAcquisitionButton'); // 취득가액 버튼
+    const acquisitionModal = document.getElementById('acquisitionModal'); // 취득가액 모달
+    const closeAcquisitionModal = document.getElementById('closeAcquisitionModal'); // 취득가액 모달 닫기 버튼
+    const saveAcquisitionButton = document.getElementById('saveAcquisition'); // 취득가액 저장 버튼
+    const totalAcquisitionDisplay = document.getElementById('totalAcquisitionDisplay'); // 취득가액 표시
+    const toggleExpensesButton = document.getElementById('toggleExpensesButton'); // 필요경비 버튼
+    const expensesModal = document.getElementById('expensesModal'); // 필요경비 모달
+    const closeExpensesModal = document.getElementById('closeExpensesModal'); // 필요경비 모달 닫기 버튼
+    const saveExpensesButton = document.getElementById('saveExpenses'); // 필요경비 저장 버튼
+    const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 필요경비 표시
 
     // 숫자 입력에 콤마 추가 (필요경비 포함)
     document.addEventListener('input', (event) => {
         const target = event.target;
-        if (['acquisitionPrice', 'transferPrice'].includes(target.id) || target.closest('#expensesList')) {
+        if (['acquisitionPrice', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
             const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
         }
@@ -24,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
         const propertyType = propertyTypeSelect.value; // 부동산 유형 값 가져오기
-
         if (propertyType === 'house') {
             // 주택: 조정대상지역 여부, 1세대 1주택 여부 필드 표시
             regulatedAreaField.style.display = 'block';
@@ -63,40 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
     acquisitionDateInput.addEventListener('change', calculateHoldingYears); // 취득일 변경 시 계산
     transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
 
-   document.addEventListener('DOMContentLoaded', () => {
-    const propertyTypeSelect = document.getElementById('propertyType'); // 부동산 유형 선택
-    const regulatedAreaField = document.getElementById('regulatedAreaField'); // 조정대상지역 여부 필드
-    const singleHouseExemptionField = document.getElementById('singleHouseExemptionField'); // 1세대 1주택 여부 필드
-    const calculateButton = document.getElementById('calculateButton'); // 계산 버튼
-
-    // 취득가액 모달 관련 변수
-    const acquisitionModal = document.getElementById('acquisitionModal');
-    const toggleAcquisitionButton = document.getElementById('toggleAcquisitionButton');
-    const closeAcquisitionModal = document.getElementById('closeAcquisitionModal');
-    const saveAcquisitionButton = document.getElementById('saveAcquisition');
-    const totalAcquisitionDisplay = document.getElementById('totalAcquisitionDisplay');
-
-    // 필요경비 모달 관련 변수
-    const expensesModal = document.getElementById('expensesModal');
-    const toggleExpensesButton = document.getElementById('toggleExpensesButton');
-    const closeExpensesModal = document.getElementById('closeExpensesModal');
-    const saveExpensesButton = document.getElementById('saveExpenses');
-    const totalExpensesDisplay = document.getElementById('totalExpensesDisplay');
-
-    // 취득가액 모달 열기/닫기
+    // 취득가액 모달 열기
     toggleAcquisitionButton.addEventListener('click', () => {
         acquisitionModal.style.display = 'block';
     });
+
+    // 취득가액 모달 닫기
     closeAcquisitionModal.addEventListener('click', () => {
         acquisitionModal.style.display = 'none';
-    });
-
-    // 필요경비 모달 열기/닫기
-    toggleExpensesButton.addEventListener('click', () => {
-        expensesModal.style.display = 'block';
-    });
-    closeExpensesModal.addEventListener('click', () => {
-        expensesModal.style.display = 'none';
     });
 
     // 취득가액 저장
@@ -106,12 +84,22 @@ document.addEventListener('DOMContentLoaded', () => {
         acquisitionModal.style.display = 'none';
     });
 
+    // 필요경비 모달 열기
+    toggleExpensesButton.addEventListener('click', () => {
+        expensesModal.style.display = 'block';
+    });
+
+    // 필요경비 모달 닫기
+    closeExpensesModal.addEventListener('click', () => {
+        expensesModal.style.display = 'none';
+    });
+});
     // 필요경비 저장
     saveExpensesButton.addEventListener('click', () => {
         let totalExpenses = 0;
         document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-            const value = input.value.replace(/,/g, '');
-            totalExpenses += parseInt(value || '0', 10);
+            const value = input.value.replace(/,/g, ''); // 콤마 제거
+            totalExpenses += parseInt(value || '0', 10); // 합산
         });
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
         expensesModal.style.display = 'none';
@@ -130,92 +118,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
-        const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10);
-        const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10);
-        const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10);
-
-        const profit = transferPrice - acquisitionPrice - expenses; // 양도가액 - 취득가액 - 필요경비
-
-        // 결과 출력 (예제: 총 양도차익만 표시)
-        document.getElementById('result').innerHTML = `
-            <h3>계산 결과</h3>
-            <p>양도차익: ${profit.toLocaleString()} 원</p>
-        `;
-    });
-});
-
-    // 필요경비 항목 체크박스 상태에 따른 입력 필드 활성화/비활성화
-    document.querySelectorAll('#expensesList input[type="checkbox"]').forEach((checkbox) => {
-        checkbox.addEventListener('change', (event) => {
-            const amountField = document.getElementById(`${event.target.id}Amount`);
-            if (event.target.checked) {
-                amountField.disabled = false; // 선택 시 입력 활성화
-            } else {
-                amountField.disabled = true; // 선택 해제 시 입력 비활성화
-                amountField.value = ''; // 값 초기화
-            }
-        });
-    });
-
-    // 필요경비 합산 계산
-    const calculateExpenses = () => {
-    let totalExpenses = 0;
-    document.querySelectorAll('#expensesList input[type="text"]').forEach((input) => {
-        // 콤마 제거 후 숫자로 변환
-        const value = input.value.replace(/,/g, ''); // 콤마 제거
-        totalExpenses += parseInt(value || '0', 10); // 숫자로 변환 후 합산
-    });
-    // 합산된 결과 표시
-    totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
-    return totalExpenses;
-  };
-
-    // 필요경비 합산 버튼 이벤트 추가
-    const calculateExpensesButton = document.getElementById('calculateExpensesButton');
-    if (calculateExpensesButton) {
-       calculateExpensesButton.addEventListener('click', (event) => {
-           event.preventDefault(); // 버튼 기본 동작 방지
-          calculateExpenses(); // 필요경비 합산 계산 호출
-       });
-    }
-
-    // 계산 버튼 클릭 이벤트
-    calculateButton.addEventListener('click', () => {
-        const propertyType = propertyTypeSelect.value; // 부동산 유형
-        const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
-        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
-        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10); // 취득가액
+        const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
+        const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
         const transferPrice = parseInt(document.getElementById('transferPrice').value.replace(/,/g, '') || '0', 10); // 양도가액
-        const expenses = calculateExpenses(); // 필요 경비 합산 계산
-        const holdingYears = parseFloat(holdingYearsDisplay.value) || 0; // 보유 기간
 
         // 양도차익 계산
-        const profit = transferPrice - acquisitionPrice - expenses; // 양도가액 - 취득가액 - 필요 경비
-
-        // 비과세 판단 (주택만 해당)
-        if (singleHouseExemption && propertyType === 'house' && transferPrice <= 1200000000) {
-            document.getElementById('result').innerHTML = `<p>1세대 1주택 비과세 조건 충족으로 세금이 없습니다.</p>`;
-            return;
-        }
+        const profit = transferPrice - acquisitionPrice - expenses;
 
         // 기본 세율 및 중과세
-        let taxRate = 0; // 기본 세율
-        let surcharge = 0; // 중과세
-        let longTermDeductionRate = 0; // 장기보유특별공제율 
+        let taxRate = 0;
+        let surcharge = 0;
+        let longTermDeductionRate = 0;
 
-        if (propertyType === 'house') {
+        if (propertyTypeSelect.value === 'house') {
+            const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
+            const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+
             if (singleHouseExemption) {
-                longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
+                longTermDeductionRate = holdingYearsDisplay.value >= 2 ? Math.min(holdingYearsDisplay.value * 0.04, 0.8) : 0;
             } else {
-                longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
+                longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.02, 0.3) : 0;
             }
+
             taxRate = regulatedArea ? 0.2 : 0.1;
             surcharge = regulatedArea ? 0.1 : 0;
-        } else if (propertyType === 'landForest') {
-            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
+        } else if (propertyTypeSelect.value === 'landForest') {
+            longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.03, 0.3) : 0;
             taxRate = 0.15;
-        } else if (propertyType === 'commercial') {
-            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
+        } else if (propertyTypeSelect.value === 'commercial') {
+            longTermDeductionRate = holdingYearsDisplay.value >= 3 ? Math.min(holdingYearsDisplay.value * 0.03, 0.3) : 0;
             taxRate = 0.2;
         }
 
@@ -233,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 결과 출력
         document.getElementById('result').innerHTML = `
             <h3>계산 결과</h3>
-            <p>보유 기간: ${holdingYears.toFixed(2)} 년</p>
             <p>양도차익: ${profit.toLocaleString()} 원</p>
             <p>장기보유특별공제: ${(longTermDeductionRate * 100).toFixed(1)}%</p>
             <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
