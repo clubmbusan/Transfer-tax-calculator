@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM 요소 가져오기
     const propertyTypeSelect = document.getElementById('propertyType'); // 부동산 유형 선택
     const regulatedAreaField = document.getElementById('regulatedAreaField'); // 조정대상지역 여부 필드
     const singleHouseExemptionField = document.getElementById('singleHouseExemptionField'); // 1세대 1주택 여부 필드
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveExpensesButton = document.getElementById('saveExpenses'); // 필요경비 저장 버튼
     const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 필요경비 표시
 
-    // 숫자 입력에 콤마 추가 (필요경비 포함)
+    // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
         if (['acquisitionPrice', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
@@ -28,45 +29,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
-        const propertyType = propertyTypeSelect.value; // 부동산 유형 값 가져오기
+        const propertyType = propertyTypeSelect.value;
         if (propertyType === 'house') {
-            // 주택: 조정대상지역 여부, 1세대 1주택 여부 필드 표시
             regulatedAreaField.style.display = 'block';
             singleHouseExemptionField.style.display = 'block';
-        } else if (propertyType === 'commercial' || propertyType === 'landForest') {
-            // 상가, 토지/임야: 해당 필드 숨김
+        } else {
             regulatedAreaField.style.display = 'none';
             singleHouseExemptionField.style.display = 'none';
         }
     };
 
-    // 초기화 및 이벤트 연결
-    propertyTypeSelect.addEventListener('change', updateFieldsByPropertyType); // 유형 변경 시 업데이트
-    updateFieldsByPropertyType(); // 초기 상태 설정
+    propertyTypeSelect.addEventListener('change', updateFieldsByPropertyType);
+    updateFieldsByPropertyType();
 
     // 보유 기간 자동 계산
     const calculateHoldingYears = () => {
-        const acquisitionDate = new Date(acquisitionDateInput.value); // 취득일
-        const transferDate = new Date(transferDateInput.value); // 양도일
+        const acquisitionDate = new Date(acquisitionDateInput.value);
+        const transferDate = new Date(transferDateInput.value);
 
         if (isNaN(acquisitionDate) || isNaN(transferDate)) {
-            holdingYearsDisplay.value = '날짜를 입력하세요.'; // 날짜 입력 오류 메시지
+            holdingYearsDisplay.value = '날짜를 입력하세요.';
             return;
         }
 
-        const diffInMilliseconds = transferDate - acquisitionDate; // 두 날짜 간 차이 계산
+        const diffInMilliseconds = transferDate - acquisitionDate;
         if (diffInMilliseconds < 0) {
-            holdingYearsDisplay.value = '양도일이 취득일보다 빠릅니다.'; // 날짜 역전 오류 메시지
+            holdingYearsDisplay.value = '양도일이 취득일보다 빠릅니다.';
             return;
         }
 
-        const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365); // 연 단위 계산
-        holdingYearsDisplay.value = diffInYears.toFixed(2) + '년'; // 소수점 2자리 표시
+        const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
+        holdingYearsDisplay.value = diffInYears.toFixed(2) + '년';
     };
 
-    acquisitionDateInput.addEventListener('change', calculateHoldingYears); // 취득일 변경 시 계산
-    transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
-
+    acquisitionDateInput.addEventListener('change', calculateHoldingYears);
+    transferDateInput.addEventListener('change', calculateHoldingYears);
     // 취득가액 모달 열기
     toggleAcquisitionButton.addEventListener('click', () => {
         acquisitionModal.style.display = 'block';
@@ -93,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeExpensesModal.addEventListener('click', () => {
         expensesModal.style.display = 'none';
     });
-});
+
     // 필요경비 저장
     saveExpensesButton.addEventListener('click', () => {
         let totalExpenses = 0;
@@ -115,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
+    
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
         const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
