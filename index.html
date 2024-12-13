@@ -84,12 +84,17 @@
             <label for="legalFee">법무사 수수료</label>
             <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
         </li>
+        <li>
+            <input type="checkbox" id="remodelingCost">
+            <label for="remodelingCost">리모델링 비용</label>
+            <input type="text" id="remodelingCostAmount" placeholder="금액 입력" disabled>
+        </li>
     </ul>
     <button id="saveExpenses" style="background-color: #007BFF; color: white;">저장</button>
     <button id="closeExpensesModal" style="background-color: #ccc; color: black;">닫기</button>
 </div>
 <p id="totalExpensesDisplay" style="margin-top: 10px; font-weight: bold;">총 필요경비: 0 원</p>
-
+            
             <!-- 자동 계산된 보유 기간 -->
             <label for="holdingYearsDisplay">보유 기간 (년):</label>
             <input type="text" id="holdingYearsDisplay" readonly placeholder="자동 계산됨">
