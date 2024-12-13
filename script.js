@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const expensesContainer = document.getElementById('expensesContainer'); // 필요경비 입력 필드 컨테이너
     const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 총 필요경비 표시
 
-    // 숫자 입력에 콤마 추가
+    let isExpensesContainerVisible = false; // 필요경비 필드 표시 여부 상태
+
+    // 숫자 입력에 콤마 추가 (필요경비 포함)
     document.addEventListener('input', (event) => {
         const target = event.target;
-        if (['acquisitionPrice', 'transferPrice'].includes(target.id)) {
+        if (['acquisitionPrice', 'transferPrice'].includes(target.id) || target.closest('#expensesList')) {
             const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
         }
@@ -62,10 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
     transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
 
     // 필요경비 입력 버튼 토글
-    let isExpensesContainerVisible = false; // 필요경비 필드 표시 여부 상태
-
     toggleButton.addEventListener('click', (event) => {
-        event.preventDefault(); // 버튼의 기본 동작 방지
+        event.preventDefault(); // 버튼 기본 동작 방지
         isExpensesContainerVisible = !isExpensesContainerVisible; // 상태 토글
         expensesContainer.style.display = isExpensesContainerVisible ? 'block' : 'none'; // 상태에 따라 표시/숨김
     });
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateExpenses = () => {
         let totalExpenses = 0;
         document.querySelectorAll('#expensesList input[type="number"]').forEach((input) => {
-            totalExpenses += parseInt(input.value || '0', 10); // 입력값 합산
+            totalExpenses += parseInt(input.value.replace(/,/g, '') || '0', 10); // 입력값 합산
         });
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
         return totalExpenses;
@@ -96,7 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 필요경비 합산 버튼 이벤트 추가
     const calculateExpensesButton = document.getElementById('calculateExpensesButton');
     if (calculateExpensesButton) {
-        calculateExpensesButton.addEventListener('click', calculateExpenses);
+        calculateExpensesButton.addEventListener('click', (event) => {
+            event.preventDefault(); // 버튼 기본 동작 방지
+            calculateExpenses(); // 필요경비 계산
+        });
     }
 
     // 계산 버튼 클릭 이벤트
@@ -125,20 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (propertyType === 'house') {
             if (singleHouseExemption) {
-                // 주택: 1세대 1주택 비과세 조건 충족 시
                 longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
             } else {
-                // 주택: 일반 주택(다주택 포함)
                 longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
             }
             taxRate = regulatedArea ? 0.2 : 0.1;
             surcharge = regulatedArea ? 0.1 : 0;
         } else if (propertyType === 'landForest') {
-            // 토지/임야
             longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
             taxRate = 0.15;
         } else if (propertyType === 'commercial') {
-            // 상가
             longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
             taxRate = 0.2;
         }
@@ -169,4 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
         `;
     });
+});
+
+
+
+  
 });
