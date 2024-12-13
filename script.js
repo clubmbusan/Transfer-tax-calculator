@@ -80,19 +80,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // 기본 세율 및 중과세
         let taxRate = 0; // 기본 세율
         let surcharge = 0; // 중과세
-        let longTermDeductionRate = 0; // 장기보유특별공제율
+        let longTermDeductionRate = 0; // 장기보유특별공제율 
 
         if (propertyType === 'house') {
-            taxRate = regulatedArea ? 0.2 : 0.1; // 조정대상지역 여부에 따른 기본 세율
-            surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.04, 0.4) : 0; // 3년 이상 공제율 계산
-        } else if (propertyType === 'landForest') {
-            taxRate = 0.15; // 토지/임야 기본 세율
-            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0; // 3년 이상 공제율 계산
-        } else if (propertyType === 'commercial') {
-            taxRate = 0.2; // 상가 기본 세율
-            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0; // 3년 이상 공제율 계산
+           if (singleHouseExemption) {
+             // 주택: 1세대 1주택 비과세 조건 충족 시
+             // 보유 기간이 2년 이상이어야 공제 가능, 매년 4%, 최대 80% 공제
+            longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
+         } else {
+            // 주택: 일반 주택(다주택 포함)
+           // 보유 기간이 3년 이상이어야 공제 가능, 매년 2%, 최대 30% 공제
+           longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
         }
+          taxRate = regulatedArea ? 0.2 : 0.1; // 주택: 조정대상지역 여부에 따라 기본 세율 결정 (20% 또는 10%)
+          surcharge = regulatedArea ? 0.1 : 0; // 주택: 조정대상지역 중과세율 적용 여부 (10%)
+       } else if (propertyType === 'landForest') {
+          // 토지/임야: 공제 조건
+          // 보유 기간이 3년 이상이어야 공제 가능, 매년 3%, 최대 30% 공제
+          longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
+          taxRate = 0.15; // 토지/임야: 기본 세율 15%
+      } else if (propertyType === 'commercial') {
+         // 상가: 공제 조건
+         // 보유 기간이 3년 이상이어야 공제 가능, 매년 3%, 최대 30% 공제
+         longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
+         taxRate = 0.2; // 상가: 기본 세율 20%
+      }
 
         // 과세표준 계산 (장기보유특별공제 반영)
         const taxableProfit = profit * (1 - longTermDeductionRate); // 과세표준 = 양도차익 * (1 - 공제율)
