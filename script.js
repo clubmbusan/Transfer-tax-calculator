@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const holdingYearsDisplay = document.getElementById('holdingYearsDisplay'); // 보유 기간 표시
     const calculateButton = document.getElementById('calculateButton'); // 계산 버튼
 
+    // 필요경비 관련 변수 추가
+    const toggleButton = document.getElementById('toggleExpensesButton'); // 필요경비 입력 버튼
+    const expensesContainer = document.getElementById('expensesContainer'); // 필요경비 입력 필드 컨테이너
+    const totalExpensesDisplay = document.getElementById('totalExpensesDisplay'); // 총 필요경비 표시
+
     // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
@@ -60,10 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 필요경비 입력 버튼 토글
     toggleButton.addEventListener('click', () => {
-        if (expensesContainer.style.display === 'none') {
-            expensesContainer.style.display = 'block';
+        if (expensesContainer.style.display === 'none' || expensesContainer.style.display === '') {
+            expensesContainer.style.display = 'block'; // 필요경비 입력 필드 표시
         } else {
-            expensesContainer.style.display = 'none';
+            expensesContainer.style.display = 'none'; // 필요경비 입력 필드 숨김
         }
     });
 
@@ -72,10 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.addEventListener('change', (event) => {
             const amountField = document.getElementById(`${event.target.id}Amount`);
             if (event.target.checked) {
-                amountField.disabled = false;
+                amountField.disabled = false; // 선택 시 입력 활성화
             } else {
-                amountField.disabled = true;
-                amountField.value = ''; // 체크 해제 시 값 초기화
+                amountField.disabled = true; // 선택 해제 시 입력 비활성화
+                amountField.value = ''; // 값 초기화
             }
         });
     });
@@ -84,9 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateButton.addEventListener('click', () => {
         let totalExpenses = 0;
         document.querySelectorAll('#expensesList input[type="number"]').forEach((input) => {
-            totalExpenses += parseInt(input.value || '0', 10);
+            totalExpenses += parseInt(input.value || '0', 10); // 입력값 합산
         });
-        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
+        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`; // 총 필요경비 표시
     });
 });
       
