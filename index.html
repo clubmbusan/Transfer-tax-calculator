@@ -50,9 +50,39 @@
             <label for="transferPrice">양도가액 (원):</label>
             <input type="text" id="transferPrice" placeholder="예: 1,000,000,000">
 
-            <!-- 필요 경비 -->
-            <label for="expenses">필요 경비 (원):</label>
-            <input type="text" id="expenses" placeholder="예: 10,000,000">
+           <!-- 필요경비 입력 버튼 -->
+          <button id="toggleExpensesButton" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+         필요경비 입력
+         </button>
+
+        <!-- 필요경비 입력 필드 -->
+       <div id="expensesContainer" style="display: none; margin-top: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+        <p>필요경비 항목을 선택하세요:</p>
+        <ul id="expensesList" style="list-style: none; padding: 0;">
+          <li>
+              <input type="checkbox" id="acquisitionTax" value="취득세">
+              <label for="acquisitionTax">취득세</label>
+              <input type="number" id="acquisitionTaxAmount" placeholder="금액 입력" style="margin-left: 10px; width: 100px;" disabled>
+         </li>
+          <li>
+             <input type="checkbox" id="brokerageFee" value="중개수수료">
+             <label for="brokerageFee">중개수수료</label>
+             <input type="number" id="brokerageFeeAmount" placeholder="금액 입력" style="margin-left: 10px; width: 100px;" disabled>
+         </li>
+          <li>
+            <input type="checkbox" id="remodelingCost" value="리모델링비용">
+            <label for="remodelingCost">리모델링비용</label>
+            <input type="number" id="remodelingCostAmount" placeholder="금액 입력" style="margin-left: 10px; width: 100px;" disabled>
+        </li>
+        <li>
+            <input type="checkbox" id="legalFee" value="법무사수수료">
+            <label for="legalFee">법무사수수료</label>
+            <input type="number" id="legalFeeAmount" placeholder="금액 입력" style="margin-left: 10px; width: 100px;" disabled>
+        </li>
+       </ul>
+       <button id="calculateExpensesButton" style="margin-top: 10px; background-color: #007BFF; color: white; padding: 5px 10px; border: none; border-radius: 3px;">필요경비 합산</button>
+       <p id="totalExpensesDisplay" style="margin-top: 10px; font-weight: bold;">총 필요경비: 0 원</p>
+      </div>
 
             <!-- 자동 계산된 보유 기간 -->
             <label for="holdingYearsDisplay">보유 기간 (년):</label>
