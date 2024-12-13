@@ -64,13 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
     transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
 
     // 필요경비 입력 버튼 토글
-    toggleButton.addEventListener('click', () => {
-        if (expensesContainer.style.display === 'none' || expensesContainer.style.display === '') {
-            expensesContainer.style.display = 'block'; // 필요경비 입력 필드 표시
-        } else {
-            expensesContainer.style.display = 'none'; // 필요경비 입력 필드 숨김
-        }
+    let isExpensesContainerVisible = false; // 필요경비 필드 표시 여부 상태
+
+    toggleButton.addEventListener('click', (event) => {
+        event.preventDefault(); // 버튼의 기본 동작 방지
+        isExpensesContainerVisible = !isExpensesContainerVisible; // 상태 토글
+        expensesContainer.style.display = isExpensesContainerVisible ? 'block' : 'none'; // 상태에 따라 표시/숨김
     });
+});
 
     // 필요경비 항목 체크박스 상태에 따른 입력 필드 활성화/비활성화
     document.querySelectorAll('#expensesList input[type="checkbox"]').forEach((checkbox) => {
