@@ -58,6 +58,38 @@ document.addEventListener('DOMContentLoaded', () => {
     acquisitionDateInput.addEventListener('change', calculateHoldingYears); // 취득일 변경 시 계산
     transferDateInput.addEventListener('change', calculateHoldingYears); // 양도일 변경 시 계산
 
+    // 필요경비 입력 버튼 토글
+    toggleButton.addEventListener('click', () => {
+        if (expensesContainer.style.display === 'none') {
+            expensesContainer.style.display = 'block';
+        } else {
+            expensesContainer.style.display = 'none';
+        }
+    });
+
+    // 필요경비 항목 체크박스 상태에 따른 입력 필드 활성화/비활성화
+    document.querySelectorAll('#expensesList input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.addEventListener('change', (event) => {
+            const amountField = document.getElementById(`${event.target.id}Amount`);
+            if (event.target.checked) {
+                amountField.disabled = false;
+            } else {
+                amountField.disabled = true;
+                amountField.value = ''; // 체크 해제 시 값 초기화
+            }
+        });
+    });
+
+    // 필요경비 합산 계산
+    calculateButton.addEventListener('click', () => {
+        let totalExpenses = 0;
+        document.querySelectorAll('#expensesList input[type="number"]').forEach((input) => {
+            totalExpenses += parseInt(input.value || '0', 10);
+        });
+        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
+    });
+});
+      
     // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
         const propertyType = propertyTypeSelect.value; // 부동산 유형
