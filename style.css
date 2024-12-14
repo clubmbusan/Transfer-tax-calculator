@@ -91,6 +91,26 @@ button#toggleExpensesButton {
     box-sizing: border-box;
 }
 
+/* 필요경비 항목 스타일 */
+.expense-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.expense-item label {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.expense-item input[type="text"] {
+    flex: 2;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* 모달 버튼 스타일 */
 .modal button {
     margin-right: 10px;
     background-color: #007BFF;
