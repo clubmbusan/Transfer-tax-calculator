@@ -212,6 +212,9 @@ calculateButton.addEventListener('click', () => {
     } else if (propertyTypeSelect.value === 'landForest') {
         longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
         taxRate = 0.15; // 기본 세율
+    } else if (propertyTypeSelect.value === 'unregistered') {
+        longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
+        taxRate = 0.7; // 고정 세율 70%
     } else if (propertyTypeSelect.value === 'others') {
         longTermDeductionRate = 0;
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
@@ -223,25 +226,34 @@ calculateButton.addEventListener('click', () => {
     // 양도소득세 계산
     const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
 
+    // 기본공제 (미등기 제외)
+    const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0;
+    const finalTax = Math.max(tax - basicDeduction, 0); // 기본공제 적용
+
     // 부가세 계산
-    const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
-    const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
-    const totalTax = tax + educationTax + ruralTax;
+    const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
+    const ruralTax = Math.floor(finalTax * 0.2); // 농어촌특별세 (20%)
+    const totalTax = finalTax + educationTax + ruralTax;
 
     // 결과 출력
     document.getElementById('result').innerHTML = `
         <h3>계산 결과</h3>
         <p>보유 기간: ${holdingYearsInt} 년</p> <!-- 정수로 보유 기간 표시 -->
         ${
-            propertyTypeSelect.value === 'others'
-                ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
-                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+            propertyTypeSelect.value === 'others' || propertyTypeSelect.value === 'unregistered'
+                ? '<p>장기보유특별공제가 적용되지 않습니다.</p>'
+                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(0)}%</p>`
         }
         <p>양도차익: ${profit.toLocaleString()} 원</p>
         <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
         <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
         <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
-        <p>양도소득세: ${tax.toLocaleString()} 원</p>
+        <p>양도소득세: ${finalTax.toLocaleString()} 원</p>
+        ${
+            basicDeduction > 0
+                ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
+                : ''
+        }
         <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
         <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
         <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
