@@ -157,18 +157,39 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
         if (checkbox) checkbox.checked = !!input.value.trim();
     });
 });
-
-    // 계산 버튼 클릭 이벤트
+    
+// 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
+    const acquisitionDate = new Date(acquisitionDateInput.value);
+    const transferDate = new Date(transferDateInput.value);
+
+    // 보유 기간 계산
+    if (isNaN(acquisitionDate) || isNaN(transferDate)) {
+        alert('취득일과 양도일을 입력해주세요.');
+        return;
+    }
+
+    const diffInMilliseconds = transferDate - acquisitionDate;
+    if (diffInMilliseconds < 0) {
+        alert('양도일이 취득일보다 빠를 수 없습니다.');
+        return;
+    }
+
+    const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
+    const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지 표시
+
+    // 양도차익 계산
     const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
     const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
     const transferPrice = parseInt(document.getElementById('transferPrice')?.value.replace(/,/g, '') || '0', 10); // 양도가액
-    const holdingYears = parseFloat(holdingYearsDisplay?.value || '0'); // 보유 기간
-
-    // 양도차익 계산
     const profit = transferPrice - acquisitionPrice - expenses;
 
-    // 기본 세율 및 중과세
+    if (profit < 0) {
+        alert('양도차익이 0보다 작습니다. 입력값을 확인해주세요.');
+        return;
+    }
+
+    // 기본 세율 및 장기보유특별공제율 계산
     let taxRate = 0;
     let surcharge = 0;
     let longTermDeductionRate = 0;
@@ -196,12 +217,6 @@ calculateButton.addEventListener('click', () => {
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
 
-    // **장기보유특별공제율 표시 업데이트**
-    const deductionRateDisplay = document.getElementById('deductionRateDisplay');
-    if (deductionRateDisplay) {
-        deductionRateDisplay.textContent = `장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%`;
-    }
-
     // 과세표준 계산 (장기보유특별공제 반영)
     const taxableProfit = profit * (1 - longTermDeductionRate);
 
@@ -216,12 +231,13 @@ calculateButton.addEventListener('click', () => {
     // 결과 출력
     document.getElementById('result').innerHTML = `
         <h3>계산 결과</h3>
-        <p>양도차익: ${profit.toLocaleString()} 원</p>
+        <p>보유 기간: ${holdingYears} 년</p>
         ${
             propertyTypeSelect.value === 'others'
                 ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
-                : `<p>장기보유특별공제: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
         }
+        <p>양도차익: ${profit.toLocaleString()} 원</p>
         <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
         <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
         <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
@@ -231,6 +247,5 @@ calculateButton.addEventListener('click', () => {
         <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
     `;
 });
-    
+   
 }); // <== 마지막 닫는 괄호 추가
-    
