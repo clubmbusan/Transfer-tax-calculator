@@ -223,6 +223,18 @@ calculateButton.addEventListener('click', () => {
     // 과세표준 계산 (장기보유특별공제 반영)
 const taxableProfit = profit * (1 - longTermDeductionRate);
 
+    // 비과세 조건 적용
+if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
+    if (holdingYearsInt >= 2) { // 보유기간 2년 이상
+        const taxExemptLimit = 1200000000; // 비과세 한도 12억
+        if (transferPrice <= taxExemptLimit) {
+            taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
+        } else {
+            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
+        }
+    }
+}
+
 // 기본공제 적용
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
 const taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
