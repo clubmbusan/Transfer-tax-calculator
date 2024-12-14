@@ -34,20 +34,22 @@
                 </select>
             </div>
 
-            <!-- 양도 정보 -->
-            <div id="transferInfo">
-                <label for="transferDate">양도 시점:</label>
-                <input type="date" id="transferDate">
-                <label for="transferPrice">양도가액 (원):</label>
-                <input type="text" id="transferPrice" placeholder="금액 입력">
-            </div>
+            <!-- 취득일 입력 -->
+<label for="acquisitionDate">취득일:</label>
+<input type="date" id="acquisitionDate">
 
+<!-- 양도일 입력 -->
+<label for="transferDate">양도일:</label>
+<input type="date" id="transferDate">
+
+<!-- 양도가액 입력 -->
+<label for="transferPrice">양도가액 (원):</label>
+<input type="text" id="transferPrice" placeholder="금액 입력">
+       
            <!-- 취득가액 버튼 -->
 <button id="toggleAcquisitionButton" type="button">취득가액 입력</button>
 <div id="acquisitionModal" class="modal">
     <h3>취득가액 입력</h3>
-    <label for="acquisitionDate">취득일:</label>
-    <input type="date" id="acquisitionDate"><br>
     <label for="acquisitionPrice">취득가액 (원):</label>
     <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
     <label for="acquisitionCost">취득 경비 (원):</label>
