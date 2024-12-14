@@ -222,6 +222,8 @@ calculateButton.addEventListener('click', () => {
     // 과세표준 계산 (장기보유특별공제 반영)
     let taxableProfit = profit * (1 - longTermDeductionRate);
 
+    console.log("1. 장기보유특별공제 반영 후 과세표준 (taxableProfit): ", taxableProfit.toLocaleString());
+
     // 비과세 조건 적용
     if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
         if (holdingYearsInt >= 2) { // 보유기간 2년 이상
@@ -234,9 +236,13 @@ calculateButton.addEventListener('click', () => {
         }
     }
 
+    console.log("2. 비과세 조건 적용 후 과세표준 (taxableProfit): ", taxableProfit.toLocaleString());
+
     // 기본공제 적용 (과세표준에서 차감)
     const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
     let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
+
+    console.log("3. 기본공제 적용 후 과세표준 (taxableProfitAfterDeduction): ", taxableProfitAfterDeduction.toLocaleString());
 
     // 누진세율 계산 로직
     let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
@@ -263,6 +269,8 @@ calculateButton.addEventListener('click', () => {
             taxableProfitAfterDeduction -= bracket.limit;
         }
     }
+
+    console.log("4. 누진세율 적용 후 양도소득세 (rawTax): ", rawTax.toLocaleString());
 
     // 부가세 계산
     const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
