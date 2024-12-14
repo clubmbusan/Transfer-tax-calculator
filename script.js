@@ -116,45 +116,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 필요경비 모달 열기/닫기
-    toggleExpensesButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (isExpensesModalOpen) {
-            closeModal(expensesModal);
-        } else {
-            openModal(expensesModal);
-        }
-        isExpensesModalOpen = !isExpensesModalOpen;
+toggleExpensesButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal(expensesModal);
+});
+
+closeExpensesModal.addEventListener('click', (event) => {
+    event.preventDefault();
+    closeModal(expensesModal);
+});
+
+// 필요경비 저장
+saveExpensesButton.addEventListener('click', () => {
+    let totalExpenses = 0;
+
+    // 각 입력 필드의 값을 읽어 합산
+    document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
+        const value = input.value.replace(/,/g, ''); // 입력값에서 콤마 제거
+        totalExpenses += parseInt(value || '0', 10); // 숫자로 변환 후 합산
     });
 
-    closeExpensesModal.addEventListener('click', (event) => {
-        event.preventDefault();
-        closeModal(expensesModal);
-        isExpensesModalOpen = false;
-    });
+    // 총 필요경비 표시
+    totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
 
-    // 필요경비 저장
-    saveExpensesButton.addEventListener('click', () => {
-        let totalExpenses = 0;
-        document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-            const value = input.value.replace(/,/g, '');
-            totalExpenses += parseInt(value || '0', 10);
-        });
-        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
-        closeModal(expensesModal);
-        isExpensesModalOpen = false;
-    });
+    // 모달 닫기
+    closeModal(expensesModal);
+});
 
-    // 체크박스 상태에 따른 입력 필드 활성화/비활성화
-    document.querySelectorAll('#expensesModal input[type="checkbox"]').forEach((checkbox) => {
-        checkbox.addEventListener('change', (event) => {
-            const amountField = document.getElementById(`${event.target.id}Amount`);
-            amountField.disabled = !event.target.checked;
-            if (!event.target.checked) {
-                amountField.value = ''; // 체크 해제 시 초기화
-            }
-        });
+// 필요경비 입력 필드 상태 관리
+document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
+    input.addEventListener('input', () => {
+        // 사용자가 값을 입력하면 자동으로 체크된 상태로 변경
+        const checkbox = document.getElementById(input.id.replace('Amount', ''));
+        if (checkbox) checkbox.checked = !!input.value.trim();
     });
-    
+});
+   
        // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
         const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
