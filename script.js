@@ -259,10 +259,6 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
-// 누진세율 계산
-let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
-let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
-
 for (const bracket of taxBrackets) {
     if (remainingProfit <= 0) break; // 남은 과세표준이 없으면 중단
     if (remainingProfit <= bracket.limit) {
@@ -281,7 +277,6 @@ const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduct
 rawTax -= applicableDeduction;
 
 console.log("4. 누진세율 적용 후 양도소득세 (rawTax): ", rawTax.toLocaleString());
-
 
     // 부가세 계산
     const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
