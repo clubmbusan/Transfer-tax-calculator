@@ -1,3 +1,4 @@
+/* 전체적인 스타일 유지 */
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -47,20 +48,6 @@ button:hover {
     background-color: #45a049;
 }
 
-/* 버튼 컨테이너 정렬 */
-#buttonContainer {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    justify-content: space-between; /* 버튼 간격 설정 */
-}
-
-/* 버튼 크기 통일 */
-button#toggleAcquisitionButton,
-button#toggleExpensesButton {
-    width: 100%;
-}
-
 /* 모달 창 스타일 */
 .modal {
     display: none;
@@ -68,8 +55,8 @@ button#toggleExpensesButton {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%; /* 모달 창 너비를 화면의 90%로 설정 */
-    max-width: 600px; /* 최대 너비 제한 */
+    width: 90%;
+    max-width: 600px;
     background: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -83,44 +70,7 @@ button#toggleExpensesButton {
     font-size: 18px;
 }
 
-.modal input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.modal button {
-    margin-right: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.modal button:last-child {
-    margin-right: 0;
-    background-color: #ccc;
-    color: black;
-}
-
-/* 모달 오버레이 */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 999;
-}
-
-/* 필요경비 리스트 스타일 */
+/* 필요경비 리스트 */
 .expense-list {
     list-style: none;
     padding: 0;
@@ -134,45 +84,41 @@ button#toggleExpensesButton {
     margin-bottom: 10px;
 }
 
-.expense-list li label {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
 .expense-list li input[type="text"] {
-    flex: 2; /* 텍스트 입력 필드 크기 조정 */
+    flex: 1;
+    margin-left: 10px;
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
 }
 
-.expense-list li input[type="checkbox"] {
-    margin-right: 10px;
-}
-
-/* 저장 및 닫기 버튼 스타일 */
-button#saveExpenses {
-    background-color: #4caf50;
-    color: white;
+/* 버튼 스타일 통일 */
+button#saveExpenses,
+button#closeExpensesModal {
+    padding: 10px 15px;
     font-size: 16px;
-    padding: 10px;
     border-radius: 5px;
     width: 100%;
     box-sizing: border-box;
+}
+
+button#saveExpenses {
+    background-color: #4caf50;
+    color: white;
+}
+
+button#saveExpenses:hover {
+    background-color: #45a049;
 }
 
 button#closeExpensesModal {
     background-color: #ccc;
     color: black;
-    font-size: 16px;
-    padding: 10px;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
+}
+
+button#closeExpensesModal:hover {
+    background-color: #bbb;
 }
 
 /* 결과 섹션 스타일 */
