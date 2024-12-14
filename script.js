@@ -248,6 +248,7 @@ calculateButton.addEventListener('click', () => {
 let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
 let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
 
+// 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
     { limit: 12000000, rate: 0.06, deduction: 0 },
     { limit: 46000000, rate: 0.15, deduction: 1080000 },
@@ -258,20 +259,29 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
+// 누진세율 계산
+let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
+let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+
 for (const bracket of taxBrackets) {
     if (remainingProfit <= 0) break; // 남은 과세표준이 없으면 중단
     if (remainingProfit <= bracket.limit) {
         // 현재 구간의 세율과 남은 과세표준을 곱해서 계산
-        rawTax += remainingProfit * bracket.rate - bracket.deduction;
+        rawTax += remainingProfit * bracket.rate; 
         break;
     } else {
-        // 구간 한도까지 계산
-        rawTax += (bracket.limit * bracket.rate - bracket.deduction);
+        // 현재 구간 한도까지 계산
+        rawTax += bracket.limit * bracket.rate; 
         remainingProfit -= bracket.limit; // 남은 과세표준에서 해당 구간 차감
     }
 }
 
+// 마지막 단계에서 누진공제(deduction)를 최종적으로 한 번만 적용
+const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
+rawTax -= applicableDeduction;
+
 console.log("4. 누진세율 적용 후 양도소득세 (rawTax): ", rawTax.toLocaleString());
+
 
     // 부가세 계산
     const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
