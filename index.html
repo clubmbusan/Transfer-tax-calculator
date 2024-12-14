@@ -57,31 +57,37 @@
 </div>
 <p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
 
-            <!-- 필요경비 버튼 -->
-            <button id="toggleExpensesButton" type="button">필요경비 입력</button>
-            <div id="expensesModal" class="modal">
-                <h3>필요경비 입력</h3>
-                <ul>
-                    <li>
-                        <input type="checkbox" id="acquisitionTax">
-                        <label for="acquisitionTax">취득세</label>
-                        <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력" disabled>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="brokerageFee">
-                        <label for="brokerageFee">중개수수료</label>
-                        <input type="text" id="brokerageFeeAmount" placeholder="금액 입력" disabled>
-                    </li>
-                    <li>
-                        <input type="checkbox" id="legalFee">
-                        <label for="legalFee">법무사 수수료</label>
-                        <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
-                    </li>
-                </ul>
-                <button id="saveExpenses" type="button">저장</button>
-                <button id="closeExpensesModal" type="button">닫기</button>
-            </div>
-            <p id="totalExpensesDisplay">총 필요경비: 0 원</p>
+             <!-- 필요경비 입력 -->
+<button id="toggleExpensesButton" type="button">필요경비 입력</button>
+<div id="expensesModal" class="modal">
+    <h3>필요경비 입력</h3>
+    <ul class="expense-list">
+        <li>
+            <label>
+                <input type="checkbox" id="acquisitionTax">
+                취득세
+            </label>
+            <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력" disabled>
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" id="brokerageFee">
+                중개수수료
+            </label>
+            <input type="text" id="brokerageFeeAmount" placeholder="금액 입력" disabled>
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" id="legalFee">
+                법무사 수수료
+            </label>
+            <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
+        </li>
+    </ul>
+    <button id="saveExpenses" type="button">저장</button>
+    <button id="closeExpensesModal" type="button">닫기</button>
+</div>
+<p id="totalExpensesDisplay">총 필요경비: 0 원</p>
 
             <!-- 계산 버튼 -->
             <button id="calculateButton" type="button">계산하기</button>
