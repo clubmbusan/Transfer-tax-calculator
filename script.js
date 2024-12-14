@@ -221,43 +221,45 @@ calculateButton.addEventListener('click', () => {
     }
 
     // 과세표준 계산 (장기보유특별공제 반영)
-    const taxableProfit = profit * (1 - longTermDeductionRate);
+const taxableProfit = profit * (1 - longTermDeductionRate);
 
-    // 양도소득세 계산
-    const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
+// 기본공제 적용
+const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
+const taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
 
-    // 기본공제 (미등기 제외)
-    const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0;
-    const finalTax = Math.max(tax - basicDeduction, 0); // 기본공제 적용
+// 양도소득세 계산
+const tax = Math.floor(taxableProfitAfterDeduction * taxRate + taxableProfitAfterDeduction * surcharge);
 
-    // 부가세 계산
-    const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
-    const ruralTax = Math.floor(finalTax * 0.2); // 농어촌특별세 (20%)
-    const totalTax = finalTax + educationTax + ruralTax;
+// 부가세 계산
+const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
+const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
+const totalTax = tax + educationTax + ruralTax;
 
-    // 결과 출력
-    document.getElementById('result').innerHTML = `
-        <h3>계산 결과</h3>
-        <p>보유 기간: ${holdingYearsInt} 년</p> <!-- 정수로 보유 기간 표시 -->
-        ${
-            propertyTypeSelect.value === 'others' || propertyTypeSelect.value === 'unregistered'
-                ? '<p>장기보유특별공제가 적용되지 않습니다.</p>'
-                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(0)}%</p>`
-        }
-        <p>양도차익: ${profit.toLocaleString()} 원</p>
-        <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
-        <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
-        <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
-        <p>양도소득세: ${finalTax.toLocaleString()} 원</p>
-        ${
-            basicDeduction > 0
-                ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
-                : ''
-        }
-        <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
-        <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
-        <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
-    `;
+// 결과 출력
+document.getElementById('result').innerHTML = `
+    <h3>계산 결과</h3>
+    <p>보유 기간: ${holdingYearsInt} 년</p> <!-- 정수로 보유 기간 표시 -->
+    ${
+        propertyTypeSelect.value === 'others'
+            ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
+            : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+    }
+    <p>양도차익: ${profit.toLocaleString()} 원</p>
+    <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
+    ${
+        basicDeduction > 0
+            ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
+            : ''
+    }
+    <p>과세표준 (기본공제 적용 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
+    <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
+    <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
+    <p>양도소득세: ${tax.toLocaleString()} 원</p>
+    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
+    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
+    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
+`;
+
 });
   
 }); // <== 마지막 닫는 괄호 추가
