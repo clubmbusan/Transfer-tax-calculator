@@ -154,70 +154,71 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
    
        // 계산 버튼 클릭 이벤트
     calculateButton.addEventListener('click', () => {
-        const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
-        const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
-        const transferPrice = parseInt(document.getElementById('transferPrice')?.value.replace(/,/g, '') || '0', 10); // 양도가액
-        const holdingYears = parseFloat(holdingYearsDisplay?.value || '0'); // 보유 기간
+    const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
+    const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
+    const transferPrice = parseInt(document.getElementById('transferPrice')?.value.replace(/,/g, '') || '0', 10); // 양도가액
+    const holdingYears = parseFloat(holdingYearsDisplay?.value.replace(/[^0-9.]/g, '') || '0'); // 보유 기간 (숫자만 추출)
 
-        // 양도차익 계산
-        const profit = transferPrice - acquisitionPrice - expenses;
+    // 양도차익 계산
+    const profit = transferPrice - acquisitionPrice - expenses;
 
-   // 기본 세율 및 중과세
-let taxRate = 0;
-let surcharge = 0;
-let longTermDeductionRate = 0;
+    // 기본 세율 및 중과세
+    let taxRate = 0;
+    let surcharge = 0;
+    let longTermDeductionRate = 0;
 
-if (propertyTypeSelect.value === 'house') {
-    // 주택: 보유기간 2년 이상부터 연 4%, 최대 80%
-    const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
-    const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+    if (propertyTypeSelect.value === 'house') {
+        // 주택: 보유기간 2년 이상부터 연 4%, 최대 80%
+        const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
+        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
 
-    if (singleHouseExemption) {
-        longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
-    } else {
-        longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
+        if (singleHouseExemption) {
+            longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
+        } else {
+            longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
+        }
+
+        taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
+        surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
+    } else if (propertyTypeSelect.value === 'landForest') {
+        // 토지/건물: 보유기간 3년 이상부터 연 3%, 최대 30%
+        longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
+        taxRate = 0.15; // 기본 세율
+    } else if (propertyTypeSelect.value === 'others') {
+        // 기타 권리: 장기보유특별공제 없음
+        longTermDeductionRate = 0;
+        taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
 
-    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
-    surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-} else if (propertyTypeSelect.value === 'landForest') {
-    // 토지/건물: 보유기간 3년 이상부터 연 3%, 최대 30%
-    longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
-    taxRate = 0.15; // 기본 세율
-} else if (propertyTypeSelect.value === 'others') {
-    // 기타 권리: 장기보유특별공제 없음
-    longTermDeductionRate = 0;
-    taxRate = 0.2; // 기타 권리는 고정 세율로 20%
-}
+    // 과세표준 계산 (장기보유특별공제 반영)
+    const taxableProfit = profit * (1 - longTermDeductionRate);
 
-// 과세표준 계산 (장기보유특별공제 반영)
-const taxableProfit = profit * (1 - longTermDeductionRate);
+    // 양도소득세 계산
+    const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
 
-// 양도소득세 계산
-const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
+    // 부가세 계산
+    const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
+    const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
+    const totalTax = tax + educationTax + ruralTax;
 
-// 부가세 계산
-const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
-const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
-const totalTax = tax + educationTax + ruralTax;
+    // 결과 출력
+    document.getElementById('result').innerHTML = `
+        <h3>계산 결과</h3>
+        <p>양도차익: ${profit.toLocaleString()} 원</p>
+        ${
+            propertyTypeSelect.value === 'others'
+                ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
+                : `<p>장기보유특별공제: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+        }
+        <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
+        <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
+        <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
+        <p>양도소득세: ${tax.toLocaleString()} 원</p>
+        <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
+        <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
+        <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
+    `;
+});
 
-// 결과 출력
-document.getElementById('result').innerHTML = `
-    <h3>계산 결과</h3>
-    <p>양도차익: ${profit.toLocaleString()} 원</p>
-    ${
-        propertyTypeSelect.value === 'others'
-            ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
-            : `<p>장기보유특별공제: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
-    }
-    <p>과세표준: ${taxableProfit.toLocaleString()} 원</p>
-    <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
-    <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
-    <p>양도소득세: ${tax.toLocaleString()} 원</p>
-    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
-    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
-    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
-`;
-  });      
 }); // <== 마지막 닫는 괄호 추가
     
