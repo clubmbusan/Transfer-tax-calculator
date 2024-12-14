@@ -1,4 +1,4 @@
-/* 전체 스타일 유지 */
+/* 전체적인 스타일 유지 */
 body {
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -18,9 +18,7 @@ body {
 
 form label {
     display: block;
-    margin: 5px 0;
-    font-weight: bold;
-    font-size: 14px;
+    margin: 10px 0 5px;
 }
 
 form input,
@@ -33,8 +31,9 @@ form select {
     box-sizing: border-box;
 }
 
+/* 기본 버튼 스타일 */
 button {
-    background-color: #007bff;
+    background-color: #4caf50; /* 녹색 */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -47,19 +46,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
-}
-
-/* 닫기 버튼 스타일 */
-button#closeExpensesModal,
-button#closeAcquisitionModal {
-    background-color: #ccc;
-    color: black;
-}
-
-button#closeExpensesModal:hover,
-button#closeAcquisitionModal:hover {
-    background-color: #bbb;
+    background-color: #45a049; /* 어두운 녹색 */
 }
 
 /* 모달 창 스타일 */
@@ -84,20 +71,28 @@ button#closeAcquisitionModal:hover {
     font-size: 18px;
 }
 
-/* 입력 필드와 제목 통일 */
-.modal label {
-    margin-bottom: 5px;
-    font-size: 14px;
-    font-weight: bold;
+/* 모달 안 저장 버튼 (파란색) */
+.modal button#saveExpenses,
+.modal button#saveAcquisition {
+    background-color: #007bff; /* 파란색 */
+    color: white;
 }
 
-.modal input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
+.modal button#saveExpenses:hover,
+.modal button#saveAcquisition:hover {
+    background-color: #0056b3; /* 어두운 파란색 */
+}
+
+/* 모달 안 닫기 버튼 (회색) */
+.modal button#closeExpensesModal,
+.modal button#closeAcquisitionModal {
+    background-color: #ccc; /* 회색 */
+    color: black;
+}
+
+.modal button#closeExpensesModal:hover,
+.modal button#closeAcquisitionModal:hover {
+    background-color: #bbb; /* 어두운 회색 */
 }
 
 /* 필요경비 리스트 스타일 */
@@ -109,6 +104,21 @@ button#closeAcquisitionModal:hover {
 
 .expense-list li {
     margin-bottom: 15px;
+}
+
+.expense-list li label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.expense-list li input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 /* 결과 섹션 스타일 */
