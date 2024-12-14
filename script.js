@@ -243,11 +243,7 @@ calculateButton.addEventListener('click', () => {
     let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
 
     console.log("3. 기본공제 적용 후 과세표준 (taxableProfitAfterDeduction): ", taxableProfitAfterDeduction.toLocaleString());
-
-    // 누진세율 계산
-let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
-let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
-
+ 
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
     { limit: 12000000, rate: 0.06, deduction: 0 },
@@ -259,52 +255,57 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
+// 누진세율 계산
+let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
+let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+
 for (const bracket of taxBrackets) {
     if (remainingProfit <= 0) break; // 남은 과세표준이 없으면 중단
     if (remainingProfit <= bracket.limit) {
         // 현재 구간의 세율과 남은 과세표준을 곱해서 계산
-        rawTax += remainingProfit * bracket.rate; 
+        rawTax += remainingProfit * bracket.rate;
         break;
     } else {
         // 현재 구간 한도까지 계산
-        rawTax += bracket.limit * bracket.rate; 
+        rawTax += bracket.limit * bracket.rate;
         remainingProfit -= bracket.limit; // 남은 과세표준에서 해당 구간 차감
     }
 }
 
-// 마지막 단계에서 누진공제(deduction)를 최종적으로 한 번만 적용
+// 누진공제 로직
 const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
 rawTax -= applicableDeduction;
 
-console.log("4. 누진세율 적용 후 양도소득세 (rawTax): ", rawTax.toLocaleString());
+// 부가세 계산
+const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
+const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
 
-    // 부가세 계산
-    const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
-    const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-    const totalTax = rawTax + educationTax + ruralTax;
+// 최종 세금 계산
+const totalTax = rawTax + educationTax + ruralTax;
 
-    // 결과 출력
-    document.getElementById('result').innerHTML = `
-        <h3>계산 결과</h3>
-        <p>보유 기간: ${holdingYearsInt} 년</p>
-        ${
-            propertyTypeSelect.value === 'others'
-                ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
-                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
-        }
-        <p>양도차익: ${profit.toLocaleString()} 원</p>
-        <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
-        ${
-            basicDeduction > 0
-                ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
-                : ''
-        }
-        <p>과세표준 (기본공제 적용 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-        <p>양도소득세: ${rawTax.toLocaleString()} 원</p>
-        <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
-        <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
-        <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
-    `;
+// 결과 출력
+document.getElementById('result').innerHTML = `
+    <h3>계산 결과</h3>
+    <p>보유 기간: ${holdingYearsInt} 년</p>
+    ${
+        propertyTypeSelect.value === 'others'
+            ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
+            : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+    }
+    <p>양도차익: ${profit.toLocaleString()} 원</p>
+    <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
+    ${
+        basicDeduction > 0
+            ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
+            : ''
+    }
+    <p>과세표준 (기본공제 적용 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
+    <p>양도소득세: ${rawTax.toLocaleString()} 원</p>
+    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
+    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
+    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
+`;
+
 });
   
 }); // <== 마지막 닫는 괄호 추가
