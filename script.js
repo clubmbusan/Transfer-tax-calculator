@@ -153,53 +153,59 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
 });
    
        // 계산 버튼 클릭 이벤트
-    calculateButton.addEventListener('click', () => {
+  calculateButton.addEventListener('click', () => {
+    // 입력 필드에서 값 가져오기
     const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
     const expenses = parseInt(totalExpensesDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 필요경비
     const transferPrice = parseInt(document.getElementById('transferPrice')?.value.replace(/,/g, '') || '0', 10); // 양도가액
-    const holdingYears = parseFloat(holdingYearsDisplay?.value.replace(/[^0-9.]/g, '') || '0'); // 보유 기간 (숫자만 추출)
+    const holdingYears = parseFloat(holdingYearsDisplay.value || '0'); // 보유 기간
 
     // 양도차익 계산
-    const profit = transferPrice - acquisitionPrice - expenses;
+    const profit = transferPrice - acquisitionPrice - expenses; // 양도차익 = 양도가액 - 취득가액 - 필요경비
 
-    // 기본 세율 및 중과세
-    let taxRate = 0;
-    let surcharge = 0;
-    let longTermDeductionRate = 0;
+    // 기본 세율 및 중과세 계산 변수 초기화
+    let taxRate = 0; // 기본 세율
+    let surcharge = 0; // 중과세율
+    let longTermDeductionRate = 0; // 장기보유특별공제율
 
-    if (propertyTypeSelect.value === 'house') {
-        // 주택: 보유기간 2년 이상부터 연 4%, 최대 80%
-        const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
-        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+    // 부동산 유형별 세율 및 공제율 계산
+    if (propertyTypeSelect.value === 'house') { 
+        // 주택: 보유기간에 따른 장기보유특별공제율 설정
+        const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
+        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
 
-        if (singleHouseExemption) {
+        if (singleHouseExemption) { 
+            // 1세대 1주택인 경우: 보유기간 2년 이상부터 연 4%, 최대 80%
             longTermDeductionRate = holdingYears >= 2 ? Math.min(holdingYears * 0.04, 0.8) : 0;
         } else {
+            // 그 외: 보유기간 3년 이상부터 연 2%, 최대 30%
             longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.02, 0.3) : 0;
         }
 
-        taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
-        surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-    } else if (propertyTypeSelect.value === 'landForest') {
-        // 토지/건물: 보유기간 3년 이상부터 연 3%, 최대 30%
-        longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0;
-        taxRate = 0.15; // 기본 세율
-    } else if (propertyTypeSelect.value === 'others') {
+        taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율: 조정대상지역 여부에 따라 10% 또는 20%
+        surcharge = regulatedArea ? 0.1 : 0; // 중과세율: 조정대상지역일 경우 10%
+
+    } else if (propertyTypeSelect.value === 'landForest') { 
+        // 토지/건물: 보유기간에 따른 장기보유특별공제율 설정
+        longTermDeductionRate = holdingYears >= 3 ? Math.min(holdingYears * 0.03, 0.3) : 0; // 보유기간 3년 이상부터 연 3%, 최대 30%
+        taxRate = 0.15; // 기본 세율: 15%
+
+    } else if (propertyTypeSelect.value === 'others') { 
         // 기타 권리: 장기보유특별공제 없음
-        longTermDeductionRate = 0;
-        taxRate = 0.2; // 기타 권리는 고정 세율로 20%
+        longTermDeductionRate = 0; // 공제율 없음
+        taxRate = 0.2; // 고정 세율: 20%
     }
 
-    // 과세표준 계산 (장기보유특별공제 반영)
+    // 과세표준 계산: 장기보유특별공제를 반영한 양도차익
     const taxableProfit = profit * (1 - longTermDeductionRate);
 
     // 양도소득세 계산
     const tax = Math.floor(taxableProfit * taxRate + taxableProfit * surcharge);
 
-    // 부가세 계산
-    const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
-    const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
-    const totalTax = tax + educationTax + ruralTax;
+    // 부가세 계산: 지방교육세 및 농어촌특별세
+    const educationTax = Math.floor(tax * 0.1); // 지방교육세: 10%
+    const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세: 20%
+    const totalTax = tax + educationTax + ruralTax; // 총 세금
 
     // 결과 출력
     document.getElementById('result').innerHTML = `
