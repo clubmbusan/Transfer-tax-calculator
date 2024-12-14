@@ -62,30 +62,32 @@
 <div id="expensesModal" class="modal">
     <h3>필요경비 입력</h3>
     <ul class="expense-list">
-        <li>
-            <label>
+        <li class="expense-item">
+            <label for="acquisitionTax">
                 <input type="checkbox" id="acquisitionTax">
                 취득세
             </label>
             <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력" disabled>
         </li>
-        <li>
-            <label>
+        <li class="expense-item">
+            <label for="brokerageFee">
                 <input type="checkbox" id="brokerageFee">
                 중개수수료
             </label>
             <input type="text" id="brokerageFeeAmount" placeholder="금액 입력" disabled>
         </li>
-        <li>
-            <label>
+        <li class="expense-item">
+            <label for="legalFee">
                 <input type="checkbox" id="legalFee">
                 법무사 수수료
             </label>
             <input type="text" id="legalFeeAmount" placeholder="금액 입력" disabled>
         </li>
     </ul>
-    <button id="saveExpenses" type="button">저장</button>
-    <button id="closeExpensesModal" type="button">닫기</button>
+    <div class="modal-buttons">
+        <button id="saveExpenses" type="button">저장</button>
+        <button id="closeExpensesModal" type="button">닫기</button>
+    </div>
 </div>
 <p id="totalExpensesDisplay">총 필요경비: 0 원</p>
 
