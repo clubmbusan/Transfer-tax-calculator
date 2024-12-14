@@ -240,10 +240,10 @@ const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0
 const taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
 
 // 누진세율 계산 로직
-let taxAmount = 0; // 세금 누적 계산
-let remainingProfit = taxableProfitAfterDeduction;
+let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
+let taxableProfitAfterDeduction = Math.max(taxableProfit, 0); // 음수 방지
 
-// 누진세율 구간 및 누진공제 설정 (양도소득세 누진세율)
+// 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
     { limit: 12000000, rate: 0.06, deduction: 0 },
     { limit: 46000000, rate: 0.15, deduction: 1080000 },
@@ -254,25 +254,26 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
-// 누진세율 적용
+// 누진세율 계산
 for (const bracket of taxBrackets) {
-    if (remainingProfit <= 0) break; // 과세표준이 0 이하일 경우 중단
-    if (remainingProfit <= bracket.limit) {
-        taxAmount += remainingProfit * bracket.rate - bracket.deduction;
+    if (taxableProfitAfterDeduction <= 0) break; // 과세표준이 0 이하인 경우 중단
+    if (taxableProfitAfterDeduction <= bracket.limit) {
+        rawTax += taxableProfitAfterDeduction * bracket.rate - bracket.deduction;
         break;
     } else {
-        taxAmount += (bracket.limit * bracket.rate - bracket.deduction);
-        remainingProfit -= bracket.limit;
+        rawTax += (bracket.limit * bracket.rate - bracket.deduction);
+        taxableProfitAfterDeduction -= bracket.limit;
     }
 }
 
-// 최종 양도소득세 (누진세율 적용)
-const tax = Math.floor(taxAmount);
+// 기본공제 적용
+const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
+const finalTax = Math.max(rawTax - basicDeduction, 0); // 기본공제를 적용한 양도소득세
 
 // 부가세 계산
-const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
-const ruralTax = Math.floor(tax * 0.2); // 농어촌특별세 (20%)
-const totalTax = tax + educationTax + ruralTax;
+const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
+const ruralTax = Math.floor(finalTax * 0.2); // 농어촌특별세 (20%)
+const totalTax = finalTax + educationTax + ruralTax;
 
 // 결과 출력
 document.getElementById('result').innerHTML = `
@@ -285,13 +286,13 @@ document.getElementById('result').innerHTML = `
     }
     <p>양도차익: ${profit.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
+    <p>양도소득세 (기본공제 적용 전): ${rawTax.toLocaleString()} 원</p>
     ${
         basicDeduction > 0
             ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
             : ''
     }
-    <p>과세표준 (기본공제 적용 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-    <p>양도소득세: ${tax.toLocaleString()} 원</p>
+    <p>양도소득세 (기본공제 적용 후): ${finalTax.toLocaleString()} 원</p>
     <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
