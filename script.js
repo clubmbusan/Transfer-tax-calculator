@@ -234,9 +234,9 @@ if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
     }
 }
 
-// 기본공제 적용 (과세표준에서 차감)
-const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
-let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
+    // 기본공제 적용 (과세표준에서 차감)
+const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
+let taxableProfitAfterDeduction = Math.max(profit - basicDeduction, 0); // profit에서 직접 기본공제 차감
 
 // 누진세율 계산 로직
 let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
