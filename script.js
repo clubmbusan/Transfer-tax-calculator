@@ -162,7 +162,7 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
         // 양도차익 계산
         const profit = transferPrice - acquisitionPrice - expenses;
 
-       // 기본 세율 및 중과세
+   // 기본 세율 및 중과세
 let taxRate = 0;
 let surcharge = 0;
 let longTermDeductionRate = 0;
@@ -218,4 +218,5 @@ document.getElementById('result').innerHTML = `
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
 `;
-});
+}); // <== 마지막 닫는 괄호 추가
+    
