@@ -177,7 +177,9 @@ calculateButton.addEventListener('click', () => {
 
     const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
     const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지 표시
-    holdingYearsDisplay.value = `${holdingYears} 년`; // UI에 보유 기간 표시
+
+    // UI에서 보유 기간 숨기도록 하려면 주석 처리 가능
+    // holdingYearsDisplay.value = `${holdingYears} 년`; 
 
     // 양도차익 계산
     const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
@@ -216,13 +218,6 @@ calculateButton.addEventListener('click', () => {
         // 기타 권리: 장기보유특별공제 없음
         longTermDeductionRate = 0;
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
-    }
-
-    // 장기보유특별공제율 UI 업데이트
-    if (propertyTypeSelect.value !== 'others') {
-        document.getElementById('deductionRateDisplay').textContent = `장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%`;
-    } else {
-        document.getElementById('deductionRateDisplay').textContent = '기타 권리는 장기보유특별공제가 적용되지 않습니다.';
     }
 
     // 과세표준 계산 (장기보유특별공제 반영)
