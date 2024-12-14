@@ -158,7 +158,7 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
     });
 });
    
- // 계산 버튼 클릭 이벤트
+// 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
     const acquisitionDate = new Date(acquisitionDateInput.value);
     const transferDate = new Date(transferDateInput.value);
@@ -175,7 +175,6 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
-    // 보유 기간 계산 (정수 처리)
     const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
     const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지만 유지
     const holdingYearsInt = Math.floor(holdingYears); // 소수점 버림하여 정수화
@@ -220,82 +219,75 @@ calculateButton.addEventListener('click', () => {
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
 
- // 과세표준 계산 (장기보유특별공제 반영)
-let taxableProfit = profit * (1 - longTermDeductionRate);
+    // 과세표준 계산 (장기보유특별공제 반영)
+    let taxableProfit = profit * (1 - longTermDeductionRate);
 
-// 비과세 조건 적용
-if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
-    if (holdingYearsInt >= 2) { // 보유기간 2년 이상
-        const taxExemptLimit = 1200000000; // 비과세 한도 12억
-        if (transferPrice <= taxExemptLimit) {
-            taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
-        } else {
-            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
+    // 비과세 조건 적용
+    if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
+        if (holdingYearsInt >= 2) { // 보유기간 2년 이상
+            const taxExemptLimit = 1200000000; // 비과세 한도 12억
+            if (transferPrice <= taxExemptLimit) {
+                taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
+            } else {
+                taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
+            }
         }
     }
-}
 
-// 기본공제 적용
-const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
-let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
+    // 누진세율 계산 로직
+    let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
+    const taxBrackets = [
+        { limit: 12000000, rate: 0.06, deduction: 0 },
+        { limit: 46000000, rate: 0.15, deduction: 1080000 },
+        { limit: 88000000, rate: 0.24, deduction: 5220000 },
+        { limit: 150000000, rate: 0.35, deduction: 14900000 },
+        { limit: 300000000, rate: 0.38, deduction: 19400000 },
+        { limit: 500000000, rate: 0.40, deduction: 25400000 },
+        { limit: Infinity, rate: 0.45, deduction: 45400000 }
+    ];
 
-// 누진세율 계산 로직
-let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
-
-// 누진세율 구간 및 누진공제 설정
-const taxBrackets = [
-    { limit: 12000000, rate: 0.06, deduction: 0 },
-    { limit: 46000000, rate: 0.15, deduction: 1080000 },
-    { limit: 88000000, rate: 0.24, deduction: 5220000 },
-    { limit: 150000000, rate: 0.35, deduction: 14900000 },
-    { limit: 300000000, rate: 0.38, deduction: 19400000 },
-    { limit: 500000000, rate: 0.40, deduction: 25400000 },
-    { limit: Infinity, rate: 0.45, deduction: 45400000 }
-];
-
-// 누진세율 계산
-for (const bracket of taxBrackets) {
-    if (taxableProfitAfterDeduction <= 0) break; // 과세표준이 0 이하인 경우 중단
-    if (taxableProfitAfterDeduction <= bracket.limit) {
-        rawTax += taxableProfitAfterDeduction * bracket.rate - bracket.deduction;
-        break;
-    } else {
-        rawTax += (bracket.limit * bracket.rate - bracket.deduction);
-        taxableProfitAfterDeduction -= bracket.limit;
+    for (const bracket of taxBrackets) {
+        if (taxableProfit <= 0) break; // 과세표준이 0 이하인 경우 중단
+        if (taxableProfit <= bracket.limit) {
+            rawTax += taxableProfit * bracket.rate - bracket.deduction;
+            break;
+        } else {
+            rawTax += (bracket.limit * bracket.rate - bracket.deduction);
+            taxableProfit -= bracket.limit;
+        }
     }
-}
 
-// 기본공제 적용 후 세금 계산
-const finalTax = Math.max(rawTax, 0); // 기본공제를 적용한 양도소득세
+    // 기본공제 적용 후 세금 계산
+    const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
+    const finalTax = Math.max(rawTax - basicDeduction, 0); // 기본공제를 적용한 양도소득세
 
-// 부가세 계산
-const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
-const ruralTax = Math.floor(finalTax * 0.2); // 농어촌특별세 (20%)
-const totalTax = finalTax + educationTax + ruralTax;
+    // 부가세 계산
+    const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
+    const ruralTax = Math.floor(finalTax * 0.2); // 농어촌특별세 (20%)
+    const totalTax = finalTax + educationTax + ruralTax;
 
-// 결과 출력
-document.getElementById('result').innerHTML = `
-    <h3>계산 결과</h3>
-    <p>보유 기간: ${holdingYearsInt} 년</p>
-    ${
-        propertyTypeSelect.value === 'others'
-            ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
-            : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
-    }
-    <p>양도차익: ${profit.toLocaleString()} 원</p>
-    <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
-    <p>양도소득세 (기본공제 적용 전): ${rawTax.toLocaleString()} 원</p>
-    ${
-        basicDeduction > 0
-            ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
-            : ''
-    }
-    <p>양도소득세 (기본공제 적용 후): ${finalTax.toLocaleString()} 원</p>
-    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
-    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
-    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
-`;
-
+    // 결과 출력
+    document.getElementById('result').innerHTML = `
+        <h3>계산 결과</h3>
+        <p>보유 기간: ${holdingYearsInt} 년</p>
+        ${
+            propertyTypeSelect.value === 'others'
+                ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
+                : `<p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>`
+        }
+        <p>양도차익: ${profit.toLocaleString()} 원</p>
+        <p>과세표준 (기본공제 적용 전): ${taxableProfit.toLocaleString()} 원</p>
+        <p>양도소득세 (기본공제 적용 전): ${rawTax.toLocaleString()} 원</p>
+        ${
+            basicDeduction > 0
+                ? `<p>기본공제: ${basicDeduction.toLocaleString()} 원</p>`
+                : ''
+        }
+        <p>양도소득세 (기본공제 적용 후): ${finalTax.toLocaleString()} 원</p>
+        <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
+        <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
+        <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
+    `;
 });
   
 }); // <== 마지막 닫는 괄호 추가
