@@ -239,8 +239,35 @@ if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
 const taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
 
-// 양도소득세 계산
-const tax = Math.floor(taxableProfitAfterDeduction * taxRate + taxableProfitAfterDeduction * surcharge);
+// 누진세율 계산 로직
+let taxAmount = 0; // 세금 누적 계산
+let remainingProfit = taxableProfitAfterDeduction;
+
+// 누진세율 구간 및 누진공제 설정 (양도소득세 누진세율)
+const taxBrackets = [
+    { limit: 12000000, rate: 0.06, deduction: 0 },
+    { limit: 46000000, rate: 0.15, deduction: 1080000 },
+    { limit: 88000000, rate: 0.24, deduction: 5220000 },
+    { limit: 150000000, rate: 0.35, deduction: 14900000 },
+    { limit: 300000000, rate: 0.38, deduction: 19400000 },
+    { limit: 500000000, rate: 0.40, deduction: 25400000 },
+    { limit: Infinity, rate: 0.45, deduction: 45400000 }
+];
+
+// 누진세율 적용
+for (const bracket of taxBrackets) {
+    if (remainingProfit <= 0) break; // 과세표준이 0 이하일 경우 중단
+    if (remainingProfit <= bracket.limit) {
+        taxAmount += remainingProfit * bracket.rate - bracket.deduction;
+        break;
+    } else {
+        taxAmount += (bracket.limit * bracket.rate - bracket.deduction);
+        remainingProfit -= bracket.limit;
+    }
+}
+
+// 최종 양도소득세 (누진세율 적용)
+const tax = Math.floor(taxAmount);
 
 // 부가세 계산
 const educationTax = Math.floor(tax * 0.1); // 지방교육세 (10%)
@@ -250,7 +277,7 @@ const totalTax = tax + educationTax + ruralTax;
 // 결과 출력
 document.getElementById('result').innerHTML = `
     <h3>계산 결과</h3>
-    <p>보유 기간: ${holdingYearsInt} 년</p> <!-- 정수로 보유 기간 표시 -->
+    <p>보유 기간: ${holdingYearsInt} 년</p>
     ${
         propertyTypeSelect.value === 'others'
             ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
@@ -264,8 +291,6 @@ document.getElementById('result').innerHTML = `
             : ''
     }
     <p>과세표준 (기본공제 적용 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-    <p>기본 세율: ${(taxRate * 100).toFixed(1)}%</p>
-    <p>중과세율: ${(surcharge * 100).toFixed(1)}%</p>
     <p>양도소득세: ${tax.toLocaleString()} 원</p>
     <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
