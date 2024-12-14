@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAcquisitionModalOpen = false; // 취득가액 모달 상태
     let isExpensesModalOpen = false; // 필요경비 모달 상태
 
+   // 방어 코드 추가: 모든 요소가 null인지 확인
+if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || !acquisitionDateInput || !transferDateInput || !calculateButton) {
+    console.error('필수 요소가 HTML에 누락되었습니다. HTML 구조를 점검하세요.');
+    return;
+}
+
     // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
