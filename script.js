@@ -237,11 +237,10 @@ if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
 
 // 기본공제 적용
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
-const taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
+let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // 기본공제를 적용한 과세표준 (0 이하로는 내려가지 않음)
 
 // 누진세율 계산 로직
 let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
-let taxableProfitAfterDeduction = Math.max(taxableProfit, 0); // 음수 방지
 
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
@@ -266,9 +265,8 @@ for (const bracket of taxBrackets) {
     }
 }
 
-// 기본공제 적용
-const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 분양권(미등기 부동산)은 기본공제 없음
-const finalTax = Math.max(rawTax - basicDeduction, 0); // 기본공제를 적용한 양도소득세
+// 기본공제 적용 후 세금 계산
+const finalTax = Math.max(rawTax, 0); // 기본공제를 적용한 양도소득세
 
 // 부가세 계산
 const educationTax = Math.floor(finalTax * 0.1); // 지방교육세 (10%)
