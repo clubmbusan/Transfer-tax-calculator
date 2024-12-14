@@ -220,10 +220,10 @@ calculateButton.addEventListener('click', () => {
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
 
-    // 과세표준 계산 (장기보유특별공제 반영)
-const taxableProfit = profit * (1 - longTermDeductionRate);
+ // 과세표준 계산 (장기보유특별공제 반영)
+let taxableProfit = profit * (1 - longTermDeductionRate);
 
-    // 비과세 조건 적용
+// 비과세 조건 적용
 if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
     if (holdingYearsInt >= 2) { // 보유기간 2년 이상
         const taxExemptLimit = 1200000000; // 비과세 한도 12억
