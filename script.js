@@ -157,7 +157,8 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
         if (checkbox) checkbox.checked = !!input.value.trim();
     });
 });
-    // 계산 버튼 클릭 이벤트
+   
+ // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
     const acquisitionDate = new Date(acquisitionDateInput.value);
     const transferDate = new Date(transferDateInput.value);
@@ -174,8 +175,11 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
+    // 보유 기간 계산 (정수 처리)
     const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
-    const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지 표시
+    const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지만 유지
+    const holdingYearsInt = Math.floor(holdingYears); // 소수점 버림하여 정수화
+    holdingYearsDisplay.value = `${holdingYearsInt} 년`; // UI에 정수화된 보유 기간 표시
 
     // 양도차익 계산
     const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
@@ -189,35 +193,29 @@ calculateButton.addEventListener('click', () => {
     }
 
     // 기본 세율 및 장기보유특별공제율 계산
-let taxRate = 0;
-let surcharge = 0;
-let longTermDeductionRate = 0;
+    let taxRate = 0;
+    let surcharge = 0;
+    let longTermDeductionRate = 0;
 
-// 보유 기간을 정수화 (예: 6.5년 -> 6년)
-const holdingYearsInt = Math.floor(holdingYears);
+    if (propertyTypeSelect.value === 'house') {
+        const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
+        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
 
-if (propertyTypeSelect.value === 'house') {
-    // 주택: 보유기간 2년 이상부터 연 4%, 최대 80%
-    const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
-    const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+        if (singleHouseExemption) {
+            longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
+        } else {
+            longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
+        }
 
-    if (singleHouseExemption) {
-        longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
-    } else {
-        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
+        taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
+        surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
+    } else if (propertyTypeSelect.value === 'landForest') {
+        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
+        taxRate = 0.15; // 기본 세율
+    } else if (propertyTypeSelect.value === 'others') {
+        longTermDeductionRate = 0;
+        taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
-
-    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
-    surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-} else if (propertyTypeSelect.value === 'landForest') {
-    // 토지/건물: 보유기간 3년 이상부터 연 3%, 최대 30%
-    longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
-    taxRate = 0.15; // 기본 세율
-} else if (propertyTypeSelect.value === 'others') {
-    // 기타 권리: 장기보유특별공제 없음
-    longTermDeductionRate = 0;
-    taxRate = 0.2; // 기타 권리는 고정 세율로 20%
-}
 
     // 과세표준 계산 (장기보유특별공제 반영)
     const taxableProfit = profit * (1 - longTermDeductionRate);
@@ -233,7 +231,7 @@ if (propertyTypeSelect.value === 'house') {
     // 결과 출력
     document.getElementById('result').innerHTML = `
         <h3>계산 결과</h3>
-        <p>보유 기간: ${holdingYears} 년</p>
+        <p>보유 기간: ${holdingYearsInt} 년</p> <!-- 정수로 보유 기간 표시 -->
         ${
             propertyTypeSelect.value === 'others'
                 ? '<p>기타 권리는 장기보유특별공제가 적용되지 않습니다.</p>'
@@ -249,5 +247,5 @@ if (propertyTypeSelect.value === 'house') {
         <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
     `;
 });
-   
+  
 }); // <== 마지막 닫는 괄호 추가
