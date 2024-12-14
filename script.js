@@ -157,8 +157,7 @@ document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) =
         if (checkbox) checkbox.checked = !!input.value.trim();
     });
 });
-    
-// 계산 버튼 클릭 이벤트
+    // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
     const acquisitionDate = new Date(acquisitionDateInput.value);
     const transferDate = new Date(transferDateInput.value);
@@ -177,9 +176,6 @@ calculateButton.addEventListener('click', () => {
 
     const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
     const holdingYears = parseFloat(diffInYears.toFixed(2)); // 소수점 2자리까지 표시
-
-    // UI에서 보유 기간 숨기도록 하려면 주석 처리 가능
-    // holdingYearsDisplay.value = `${holdingYears} 년`; 
 
     // 양도차익 계산
     const acquisitionPrice = parseInt(totalAcquisitionDisplay.textContent.replace(/[^0-9]/g, '') || '0', 10); // 취득가액
