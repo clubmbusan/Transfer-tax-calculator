@@ -279,8 +279,6 @@ rawTax -= applicableDeduction;
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
 const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-
-// 최종 세금 계산
 const totalTax = rawTax + educationTax + ruralTax;
 
 // 결과 출력
