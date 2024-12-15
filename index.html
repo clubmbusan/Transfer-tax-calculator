@@ -77,23 +77,28 @@
 <!-- 양도가액 입력 -->
 <label for="transferPrice">양도가액 (원):</label>
 <input type="text" id="transferPrice" placeholder="금액 입력">
-       <!-- 필요 경비 -->
+       
+<!-- 필요 경비 -->
 <button id="toggleExpensesButton" type="button">필요 경비</button>
 <div id="expensesModal" class="modal">
     <h3>필요경비 입력</h3>
     <ul class="expense-list">
+        <!-- 자본적 지출 -->
         <li>
             <label for="transferBrokerageFee">자본적 지출:</label>
             <input type="text" id="transferBrokerageFee" placeholder="금액 입력">
         </li>
+        <!-- 중개 수수료 -->
         <li>
             <label for="transferLegalFee">중개 수수료:</label>
             <input type="text" id="transferLegalFee" placeholder="금액 입력">
         </li>
-        li>
+        <!-- 법무사 수수료 -->
+        <li>
             <label for="transferLegalServiceFee">법무사 수수료:</label>
             <input type="text" id="transferLegalServiceFee" placeholder="금액 입력">
         </li>
+        <!-- 기타 경비 -->
         <li>
             <label for="transferOtherExpenses">기타 경비:</label>
             <input type="text" id="transferOtherExpenses" placeholder="금액 입력">
