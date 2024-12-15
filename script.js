@@ -28,16 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
    // 숫자 입력에 콤마 추가/제거
     const handleCommaFormatting = (event) => {
-        const target = event.target;
-        const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
-        target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
-    };
+    const target = event.target;
+    const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    if (rawValue === '') {
+        target.value = ''; // 비어 있는 경우 그대로 둠
+    } else {
+        target.value = parseInt(rawValue, 10).toLocaleString(); // 콤마 추가
+    }
+  };
 
     const removeComma = (value) => parseInt(value.replace(/,/g, '') || '0', 10); // 콤마 제거 후 숫자 반환
 
     // 숫자 입력 필드에 콤마 처리 이벤트 적용
     document.querySelectorAll('input[type="text"]').forEach((input) => {
-        input.addEventListener('input', handleCommaFormatting);
+    input.addEventListener('input', handleCommaFormatting);
     });
 
     // 부동산 유형에 따라 필드 표시/숨김
