@@ -155,19 +155,17 @@ closeExpensesModal.addEventListener('click', (event) => {
 
 // 필요경비 저장
 saveExpensesButton.addEventListener('click', () => {
-    let totalExpenses = 0;
-
-    // 필요경비 항목 필드 가져오기
+    // 필요경비 항목 필드 값 읽기
     const transferBrokerageFee = parseInt(document.getElementById('transferBrokerageFee').value.replace(/,/g, '') || '0', 10); // 자본적 지출
     const transferLegalFee = parseInt(document.getElementById('transferLegalFee').value.replace(/,/g, '') || '0', 10); // 중개 수수료
     const transferLegalServiceFee = parseInt(document.getElementById('transferLegalServiceFee').value.replace(/,/g, '') || '0', 10); // 법무사 비용
     const transferOtherExpenses = parseInt(document.getElementById('transferOtherExpenses').value.replace(/,/g, '') || '0', 10); // 기타 비용
 
-     // 총 필요경비 계산
-      const totalExpenses = transferBrokerageFee + transferLegalFee + transferLegalServiceFee + transferOtherExpenses;
+    // 필요경비 합산
+    const totalExpenses = transferBrokerageFee + transferLegalFee + transferLegalServiceFee + transferOtherExpenses;
 
-     // 결과 표시
-       totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
+    // 결과 표시
+    totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
 
     // 모달 닫기
     closeModal(expensesModal);
