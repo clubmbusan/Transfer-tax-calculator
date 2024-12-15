@@ -1,48 +1,53 @@
 /* 전체적인 스타일 유지 */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: Arial, sans-serif; /* 폰트 설정 */
+    background-color: #f9f9f9; /* 전체 배경색 */
     margin: 20px;
     padding: 0;
 }
 
+/* 계산기 컨테이너 스타일 */
 .calculator {
-    max-width: 600px;
-    margin: 50px auto;
+    max-width: 600px; /* 최대 너비 */
+    margin: 50px auto; /* 화면 중앙 정렬 */
     padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: #fff; /* 배경색 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
     box-sizing: border-box;
 }
 
+/* 폼 라벨 스타일 */
 form label {
     display: block;
-    margin: 10px 0 5px;
+    margin: 10px 0 5px; /* 라벨 간격 */
+    font-size: 16px; /* 라벨 글자 크기 통일 */
+    font-weight: bold; /* 라벨 굵게 */
 }
 
+/* 폼 입력 필드 및 셀렉트 스타일 */
 form input,
 form select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    width: 100%; /* 너비 전체 사용 */
+    padding: 10px; /* 내부 여백 */
+    margin-bottom: 15px; /* 하단 여백 */
+    border: 1px solid #ddd; /* 테두리 색상 */
+    border-radius: 5px; /* 모서리 둥글게 */
     box-sizing: border-box;
 }
 
 /* 기본 버튼 스타일 */
 button {
     background-color: #4caf50; /* 녹색 */
-    color: white;
+    color: white; /* 글자색 */
     border: none;
     padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
+    font-size: 16px; /* 버튼 글자 크기 */
+    cursor: pointer; /* 마우스 커서 변경 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    width: 100%; /* 전체 너비 */
     box-sizing: border-box;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* 하단 여백 */
 }
 
 button:hover {
@@ -51,31 +56,31 @@ button:hover {
 
 /* 모달 창 스타일 */
 .modal {
-    display: none;
-    position: fixed;
+    display: none; /* 기본적으로 숨김 */
+    position: fixed; /* 화면 중앙 정렬 */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
-    max-width: 600px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    max-width: 600px; /* 최대 너비 설정 */
+    background: #fff; /* 배경색 */
+    padding: 20px; /* 내부 여백 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    z-index: 1000; /* 가장 위에 표시 */
     box-sizing: border-box;
 }
 
 .modal h3 {
     margin-bottom: 20px;
-    font-size: 18px;
+    font-size: 18px; /* 제목 글자 크기 */
 }
 
 /* 모달 안 저장 버튼 (파란색) */
 .modal button#saveExpenses,
 .modal button#saveAcquisition {
     background-color: #007bff; /* 파란색 */
-    color: white;
+    color: white; /* 글자색 */
 }
 
 .modal button#saveExpenses:hover,
@@ -87,7 +92,7 @@ button:hover {
 .modal button#closeExpensesModal,
 .modal button#closeAcquisitionModal {
     background-color: #ccc; /* 회색 */
-    color: black;
+    color: black; /* 글자색 */
 }
 
 .modal button#closeExpensesModal:hover,
@@ -97,37 +102,39 @@ button:hover {
 
 /* 필요경비 리스트 스타일 */
 .expense-list {
-    list-style: none;
+    list-style: none; /* 리스트 불릿 제거 */
     padding: 0;
     margin: 0;
 }
 
 .expense-list li {
-    margin-bottom: 15px;
+    margin-bottom: 15px; /* 리스트 항목 간격 */
 }
 
 .expense-list li label {
-    display: block;
+    display: block; /* 라벨을 블록 형태로 설정 */
     margin-bottom: 5px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 16px; /* 글자 크기 통일 */
+    font-weight: bold; /* 글자 굵게 */
 }
 
+/* 필요경비 입력 필드 스타일 */
 .expense-list li input[type="text"] {
-    width: 100%;
+    width: 100%; /* 입력 필드 너비 설정 */
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    font-size: 16px; /* 입력 필드 글자 크기 통일 */
+    border: 1px solid #ddd; /* 테두리 색상 */
+    border-radius: 5px; /* 모서리 둥글게 */
     box-sizing: border-box;
 }
 
 /* 결과 섹션 스타일 */
 #result {
     margin-top: 20px;
-    background: #f1f1f1;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    line-height: 1.6;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #f1f1f1; /* 결과 배경색 */
+    padding: 15px; /* 내부 여백 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    font-size: 14px; /* 글자 크기 */
+    line-height: 1.6; /* 줄 간격 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
