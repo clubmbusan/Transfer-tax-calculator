@@ -169,7 +169,8 @@ saveExpensesButton.addEventListener('click', () => {
     // 모달 닫기
     closeModal(expensesModal);
 });
-   
+});
+    
 // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
     const acquisitionDate = new Date(acquisitionDateInput.value);
