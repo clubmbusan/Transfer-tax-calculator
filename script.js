@@ -69,13 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
-        holdingYearsDisplay.value = diffInYears.toFixed(2) + '년';
+        holdingYearsDisplay.value = `${diffInYears.toFixed(2)} 년`;
     };
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
 
-     // 모달 열기/닫기 공통 함수
+    // 모달 열기/닫기 공통 함수
     const openModal = (modal) => {
         modal.style.display = 'block';
     };
@@ -109,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const otherExpenses = parseInt(document.getElementById('otherExpenses').value.replace(/,/g, '') || '0', 10);
 
         const totalAcquisitionCost = acquisitionPrice + brokerageFee + legalFee + otherExpenses;
-
         totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisitionCost.toLocaleString()} 원`;
+
         closeModal(acquisitionModal);
         isAcquisitionModalOpen = false;
     });
@@ -129,10 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 필요경비 저장
     saveExpensesButton.addEventListener('click', () => {
         let totalExpenses = 0;
-
         document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-            const value = input.value.replace(/,/g, ''); // 입력값에서 콤마 제거
-            totalExpenses += parseInt(value || '0', 10); // 숫자로 변환 후 합산
+            const value = input.value.replace(/,/g, '');
+            totalExpenses += parseInt(value || '0', 10);
         });
 
         totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
