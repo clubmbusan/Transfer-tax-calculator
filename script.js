@@ -142,7 +142,7 @@ saveAcquisitionButton.addEventListener('click', () => {
     isAcquisitionModalOpen = false;
 });
 
-    // 필요경비 모달 열기/닫기
+ // 필요경비 모달 열기/닫기
 toggleExpensesButton.addEventListener('click', (event) => {
     event.preventDefault();
     openModal(expensesModal);
