@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
-});
 
 // 모달 열기/닫기 공통 함수
 const openModal = (modal) => {
