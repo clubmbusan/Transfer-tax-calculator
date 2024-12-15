@@ -148,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isExpensesModalOpen = false;
         });
     }
-}); // 마지막 중괄호 닫기
 
     // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
