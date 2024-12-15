@@ -101,25 +101,31 @@ if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || 
     });
 
     // 취득가액 저장
-    saveAcquisitionButton.addEventListener('click', () => {
-        // 취득가액과 취득 경비 입력 필드 가져오기
-        const acquisitionPriceElement = document.getElementById('acquisitionPrice');
-        const acquisitionCostElement = document.getElementById('acquisitionCost');
+   saveAcquisitionButton.addEventListener('click', () => {
+    // 취득가액 입력 필드 가져오기
+    const acquisitionPriceElement = document.getElementById('acquisitionPrice');
 
-        // 값 읽기, 없으면 0으로 처리
-        const acquisitionPrice = acquisitionPriceElement ? parseInt(acquisitionPriceElement.value.replace(/,/g, '') || '0', 10) : 0;
-        const acquisitionCost = acquisitionCostElement ? parseInt(acquisitionCostElement.value.replace(/,/g, '') || '0', 10) : 0;
+    // 경비 항목 필드 가져오기
+    const acquisitionBrokerageFee = parseInt(document.getElementById('acquisitionBrokerageFee').value.replace(/,/g, '') || '0', 10);
+    const acquisitionLegalFee = parseInt(document.getElementById('acquisitionLegalFee').value.replace(/,/g, '') || '0', 10);
+    const acquisitionOtherExpenses = parseInt(document.getElementById('acquisitionOtherExpenses').value.replace(/,/g, '') || '0', 10);
 
-        // 총 취득가액 계산
-        const totalAcquisition = acquisitionPrice + acquisitionCost;
+    // 경비 합산
+    const totalExpenses = acquisitionBrokerageFee + acquisitionLegalFee + acquisitionOtherExpenses;
 
-        // 결과 표시
-        totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisition.toLocaleString()} 원`;
+    // 취득가액 값 읽기, 없으면 0으로 처리
+    const acquisitionPrice = acquisitionPriceElement ? parseInt(acquisitionPriceElement.value.replace(/,/g, '') || '0', 10) : 0;
 
-        // 모달 닫기
-        closeModal(acquisitionModal);
-        isAcquisitionModalOpen = false;
-    });
+    // 총 취득가액 계산
+    const totalAcquisition = acquisitionPrice + totalExpenses;
+
+    // 결과 표시
+    totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisition.toLocaleString()} 원`;
+
+    // 모달 닫기
+    closeModal(acquisitionModal);
+    isAcquisitionModalOpen = false;
+});
 
     // 필요경비 모달 열기/닫기
 toggleExpensesButton.addEventListener('click', (event) => {
