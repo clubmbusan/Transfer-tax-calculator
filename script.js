@@ -27,22 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let isTransferModalOpen = false; // 양도가액 모달 상태
 
    // 숫자 입력에 콤마 추가/제거
-    const handleCommaFormatting = (event) => {
+const handleCommaFormatting = (event) => {
     const target = event.target;
-    const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+
+    // 숫자만 추출
+    const rawValue = target.value.replace(/[^0-9]/g, '');
+
+    // 입력값이 비어 있으면 공백 유지, 그렇지 않으면 콤마 추가
     if (rawValue === '') {
-        target.value = ''; // 비어 있는 경우 그대로 둠
+        target.value = '';
     } else {
-        target.value = parseInt(rawValue, 10).toLocaleString(); // 콤마 추가
+        target.value = parseInt(rawValue, 10).toLocaleString();
     }
-  };
+};
 
-    const removeComma = (value) => parseInt(value.replace(/,/g, '') || '0', 10); // 콤마 제거 후 숫자 반환
+// 콤마 제거 후 숫자 반환
+const removeComma = (value) => {
+    if (!value) return 0; // 입력값이 없으면 0 반환
+    return parseInt(value.replace(/,/g, ''), 10) || 0; // 콤마 제거 후 숫자 변환
+};
 
-    // 숫자 입력 필드에 콤마 처리 이벤트 적용
-    document.querySelectorAll('input[type="text"]').forEach((input) => {
-    input.addEventListener('input', handleCommaFormatting);
+// 숫자 입력 필드에 콤마 처리 이벤트 적용
+document.addEventListener('DOMContentLoaded', () => {
+    const numericInputs = document.querySelectorAll('input[type="text"]');
+
+    numericInputs.forEach((input) => {
+        input.addEventListener('input', handleCommaFormatting); // 콤마 추가 이벤트 연결
     });
+});
 
     // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
