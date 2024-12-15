@@ -262,24 +262,23 @@ console.log("3. 과세표준 (기본공제 전):", taxableProfit.toLocaleString(
 console.log("4. 기본공제:", basicDeduction.toLocaleString(), "원");
 console.log("5. 과세표준 (기본공제 후):", taxableProfitAfterDeduction.toLocaleString(), "원");
 
-// 누진세율 계산
-let rawTax = 0;
-let remainingProfit = taxableProfitAfterDeduction;
+let rawTax = 0; // 양도소득세
+let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
 
 console.log("6. 누진세율 계산 시작...");
 for (const bracket of taxBrackets) {
-    if (remainingProfit <= 0) break;
-    if (remainingProfit <= bracket.limit) {
-        // 현재 구간에 남은 과세표준을 모두 적용
+    if (remainingProfit <= 0) break; // 남은 금액이 0 이하라면 중단
+    if (bracket.limit === Infinity || remainingProfit <= bracket.limit) {
+        // 현재 구간에 남은 금액을 모두 과세
         const taxForBracket = remainingProfit * bracket.rate;
         rawTax += taxForBracket;
         console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
         break;
     } else {
-        // 현재 구간 한도까지 과세
+        // 구간 한도까지 과세
         const taxForBracket = bracket.limit * bracket.rate;
         rawTax += taxForBracket;
-        remainingProfit -= bracket.limit;
+        remainingProfit -= bracket.limit; // 해당 구간 금액을 차감
         console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
     }
 }
