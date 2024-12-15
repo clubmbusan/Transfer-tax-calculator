@@ -26,42 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAcquisitionModalOpen = false; // 취득가액 모달 상태
     let isTransferModalOpen = false; // 양도가액 모달 상태
 
-    // 숫자 입력에 콤마 추가/제거
-const handleCommaFormatting = (event) => {
-    const target = event.target;
+    // 숫자 입력에 콤마 추가
+    const formatWithComma = (value) => {
+    const rawValue = value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    return rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
+    };
 
-    // 커서 위치 기억
-    const cursorPosition = target.selectionStart;
+    // 콤마 제거 후 숫자 반환
+     const parseWithoutComma = (value) => parseInt(value.replace(/,/g, '') || '0', 10);
 
-    // 숫자만 추출
-    const rawValue = target.value.replace(/[^0-9]/g, '');
+    // 숫자 입력 이벤트 처리
+    const handleInputWithComma = (event) => {
+    event.target.value = formatWithComma(event.target.value);
+   };
 
-    // 입력값이 비어 있으면 공백 유지
-    if (rawValue === '') {
-        target.value = '';
-        return;
-    }
-
-    // 콤마 추가
-    target.value = parseInt(rawValue, 10).toLocaleString();
-
-    // 커서 위치 복원
-    const newCursorPosition = target.value.length - (rawValue.length - cursorPosition);
-    target.setSelectionRange(newCursorPosition, newCursorPosition);
-};
-
-// 콤마 제거 후 숫자 반환
-const removeComma = (value) => {
-    if (!value) return 0; // 입력값이 없으면 0 반환
-    return parseInt(value.replace(/,/g, ''), 10) || 0; // 콤마 제거 후 숫자 변환
-};
-
-// 숫자 입력 필드에 콤마 처리 이벤트 적용
-document.addEventListener('DOMContentLoaded', () => {
-    const numericInputs = document.querySelectorAll('input[type="text"]');
-
-    numericInputs.forEach((input) => {
-        input.addEventListener('input', handleCommaFormatting); // 콤마 추가 이벤트 연결
+    // DOMContentLoaded에서 모든 숫자 입력 필드에 이벤트 적용
+    document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[type="text"]').forEach((input) => {
+        input.addEventListener('input', handleInputWithComma); // 콤마 추가 이벤트 연결
     });
 });
    
