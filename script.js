@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-       // 부동산 유형에 따라 필드 표시/숨김
+    // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
         const propertyType = propertyTypeSelect.value;
         if (propertyType === 'house') {
@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     propertyTypeSelect.addEventListener('change', updateFieldsByPropertyType);
     updateFieldsByPropertyType();
+});
 
     // 보유 기간 자동 계산
     const calculateHoldingYears = () => {
@@ -85,58 +86,73 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 취득가액 모달 열기/닫기
-    toggleAcquisitionButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (isAcquisitionModalOpen) {
-            closeModal(acquisitionModal);
-        } else {
-            openModal(acquisitionModal);
-        }
-        isAcquisitionModalOpen = !isAcquisitionModalOpen;
-    });
+    if (toggleAcquisitionButton && acquisitionModal) {
+        toggleAcquisitionButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            isAcquisitionModalOpen = !isAcquisitionModalOpen;
+            isAcquisitionModalOpen ? openModal(acquisitionModal) : closeModal(acquisitionModal);
+        });
+    } else {
+        console.warn('취득가액 관련 요소가 누락되었습니다.');
+    }
 
-    closeAcquisitionModal.addEventListener('click', (event) => {
-        event.preventDefault();
-        closeModal(acquisitionModal);
-        isAcquisitionModalOpen = false;
-    });
+    if (closeAcquisitionModal && acquisitionModal) {
+        closeAcquisitionModal.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeModal(acquisitionModal);
+            isAcquisitionModalOpen = false;
+        });
+    }
 
     // 취득 비용 저장 버튼 클릭 이벤트
-    saveAcquisitionButton.addEventListener('click', () => {
-        const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice').value.replace(/,/g, '') || '0', 10);
-        const brokerageFee = parseInt(document.getElementById('brokerageFee').value.replace(/,/g, '') || '0', 10);
-        const legalFee = parseInt(document.getElementById('legalFee').value.replace(/,/g, '') || '0', 10);
-        const otherExpenses = parseInt(document.getElementById('otherExpenses').value.replace(/,/g, '') || '0', 10);
+    if (saveAcquisitionButton && totalAcquisitionDisplay) {
+        saveAcquisitionButton.addEventListener('click', () => {
+            const acquisitionPrice = parseInt(document.getElementById('acquisitionPrice')?.value.replace(/,/g, '') || '0', 10);
+            const brokerageFee = parseInt(document.getElementById('brokerageFee')?.value.replace(/,/g, '') || '0', 10);
+            const legalFee = parseInt(document.getElementById('legalFee')?.value.replace(/,/g, '') || '0', 10);
+            const otherExpenses = parseInt(document.getElementById('otherExpenses')?.value.replace(/,/g, '') || '0', 10);
 
-        const totalAcquisitionCost = acquisitionPrice + brokerageFee + legalFee + otherExpenses;
-        totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisitionCost.toLocaleString()} 원`;
+            const totalAcquisitionCost = acquisitionPrice + brokerageFee + legalFee + otherExpenses;
+            totalAcquisitionDisplay.textContent = `총 취득가액: ${totalAcquisitionCost.toLocaleString()} 원`;
 
-        closeModal(acquisitionModal);
-        isAcquisitionModalOpen = false;
-    });
+            closeModal(acquisitionModal);
+            isAcquisitionModalOpen = false;
+        });
+    }
 
     // 필요경비 모달 열기/닫기
-    toggleExpensesButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        openModal(expensesModal);
-    });
+    if (toggleExpensesButton && expensesModal) {
+        toggleExpensesButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            isExpensesModalOpen = !isExpensesModalOpen;
+            isExpensesModalOpen ? openModal(expensesModal) : closeModal(expensesModal);
+        });
+    } else {
+        console.warn('필요경비 관련 요소가 누락되었습니다.');
+    }
 
-    closeExpensesModal.addEventListener('click', (event) => {
-        event.preventDefault();
-        closeModal(expensesModal);
-    });
+    if (closeExpensesModal && expensesModal) {
+        closeExpensesModal.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeModal(expensesModal);
+            isExpensesModalOpen = false;
+        });
+    }
 
     // 필요경비 저장
-    saveExpensesButton.addEventListener('click', () => {
-        let totalExpenses = 0;
-        document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-            const value = input.value.replace(/,/g, '');
-            totalExpenses += parseInt(value || '0', 10);
-        });
+    if (saveExpensesButton && totalExpensesDisplay) {
+        saveExpensesButton.addEventListener('click', () => {
+            let totalExpenses = 0;
+            document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
+                const value = input.value.replace(/,/g, '');
+                totalExpenses += parseInt(value || '0', 10);
+            });
 
-        totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
-        closeModal(expensesModal);
-    });
+            totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
+            closeModal(expensesModal);
+            isExpensesModalOpen = false;
+        });
+    }
 
     // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
