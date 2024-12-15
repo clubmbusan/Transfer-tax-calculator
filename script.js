@@ -150,6 +150,32 @@ const numericFields = [
     isAcquisitionModalOpen = false;
 });
 
+    // 양도가액 버튼 및 모달
+const toggleTransferButton = document.getElementById('toggleTransferButton');
+const transferModal = document.getElementById('transferModal');
+const closeTransferModal = document.getElementById('closeTransferModal');
+const transferDateButton = document.getElementById('transferDateButton');
+const selectedTransferDate = document.getElementById('selectedTransferDate');
+
+// 양도가액 모달 열기
+toggleTransferButton.addEventListener('click', () => {
+    openModal(transferModal);
+});
+
+// 양도가액 모달 닫기
+closeTransferModal.addEventListener('click', () => {
+    closeModal(transferModal);
+});
+
+// 날짜 선택 버튼 로직 (양도일 입력)
+transferDateButton.addEventListener('click', () => {
+    const date = prompt('양도일을 입력하세요 (YYYY-MM-DD 형식)');
+    if (date) {
+        selectedTransferDate.textContent = `선택한 날짜: ${date}`;
+        selectedTransferDate.setAttribute('data-date', date); // 날짜 저장
+    }
+});
+    
     // 필요경비 모달 열기/닫기
 toggleExpensesButton.addEventListener('click', (event) => {
     event.preventDefault();
