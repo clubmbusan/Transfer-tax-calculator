@@ -26,19 +26,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAcquisitionModalOpen = false; // 취득가액 모달 상태
     let isTransferModalOpen = false; // 양도가액 모달 상태
 
-   // 숫자 입력에 콤마 추가/제거
+    // 숫자 입력에 콤마 추가/제거
 const handleCommaFormatting = (event) => {
     const target = event.target;
+
+    // 커서 위치 기억
+    const cursorPosition = target.selectionStart;
 
     // 숫자만 추출
     const rawValue = target.value.replace(/[^0-9]/g, '');
 
-    // 입력값이 비어 있으면 공백 유지, 그렇지 않으면 콤마 추가
+    // 입력값이 비어 있으면 공백 유지
     if (rawValue === '') {
         target.value = '';
-    } else {
-        target.value = parseInt(rawValue, 10).toLocaleString();
+        return;
     }
+
+    // 콤마 추가
+    target.value = parseInt(rawValue, 10).toLocaleString();
+
+    // 커서 위치 복원
+    const newCursorPosition = target.value.length - (rawValue.length - cursorPosition);
+    target.setSelectionRange(newCursorPosition, newCursorPosition);
 };
 
 // 콤마 제거 후 숫자 반환
@@ -55,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('input', handleCommaFormatting); // 콤마 추가 이벤트 연결
     });
 });
-
+   
     // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
         const propertyType = propertyTypeSelect.value;
