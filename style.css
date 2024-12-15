@@ -138,3 +138,9 @@ button:hover {
     line-height: 1.6; /* 줄 간격 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
+/* 라벨에 자동 추가된 아이콘 제거 */
+.expense-list li label::before,
+.expense-list li label::after {
+    content: none; /* 가상 요소 제거 */
+    display: none; /* 혹시 공간이 남을 경우 완전히 숨김 */
+}
