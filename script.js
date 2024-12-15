@@ -263,8 +263,8 @@ console.log("4. 기본공제:", basicDeduction.toLocaleString(), "원");
 console.log("5. 과세표준 (기본공제 후):", taxableProfitAfterDeduction.toLocaleString(), "원");
 
 // 누진세율 계산
-let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
-let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+let rawTax = 0;
+let remainingProfit = taxableProfitAfterDeduction;
 
 console.log("6. 누진세율 계산 시작...");
 for (const bracket of taxBrackets) {
