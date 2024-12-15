@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     propertyTypeSelect.addEventListener('change', updateFieldsByPropertyType);
     updateFieldsByPropertyType();
-});
 
     // 보유 기간 자동 계산
     const calculateHoldingYears = () => {
@@ -92,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isAcquisitionModalOpen = !isAcquisitionModalOpen;
             isAcquisitionModalOpen ? openModal(acquisitionModal) : closeModal(acquisitionModal);
         });
-    } else {
-        console.warn('취득가액 관련 요소가 누락되었습니다.');
     }
 
     if (closeAcquisitionModal && acquisitionModal) {
@@ -127,8 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isExpensesModalOpen = !isExpensesModalOpen;
             isExpensesModalOpen ? openModal(expensesModal) : closeModal(expensesModal);
         });
-    } else {
-        console.warn('필요경비 관련 요소가 누락되었습니다.');
     }
 
     if (closeExpensesModal && expensesModal) {
@@ -153,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isExpensesModalOpen = false;
         });
     }
-});
+}); // 마지막 중괄호 닫기
 
     // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
