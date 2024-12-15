@@ -90,70 +90,48 @@ const numericFields = [
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
    
- // 모달 입력 필드를 초기화하는 공통 함수
-const resetFields = (modalId) => {
-    document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
-        input.value = ''; // 입력 필드 값 초기화
+    // 모달 입력 필드를 초기화하는 공통 함수
+      const resetFields = (modalId) => {
+      document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
+          input.value = ''; // 입력 필드 값 초기화
+        });
+     };
+
+     // 모달 열기/닫기 공통 함수
+       const openModal = (modal) => {
+       modal.style.display = 'block';
+     };
+
+       const closeModal = (modal) => {
+       modal.style.display = 'none';
+      };
+
+    // 취득가액 모달 열기/닫기
+    toggleAcquisitionButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (isAcquisitionModalOpen) {
+            closeModal(acquisitionModal);
+        } else {
+            openModal(acquisitionModal);
+        }
+        isAcquisitionModalOpen = !isAcquisitionModalOpen;
     });
-};
 
-// 모달 열기/닫기 공통 함수
-const openModal = (modal) => {
-    modal.style.display = 'block';
-};
+    closeAcquisitionModal.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeModal(acquisitionModal);
+        isAcquisitionModalOpen = false;
+    });
 
-const closeModal = (modal) => {
-    modal.style.display = 'none';
-};
-
-// 취득가액 관련 요소
-const toggleAcquisitionButton = document.getElementById('toggleAcquisitionButton');
-const acquisitionModal = document.getElementById('acquisitionModal');
-const closeAcquisitionModal = document.getElementById('closeAcquisitionModal');
-const acquisitionDateButton = document.getElementById('acquisitionDateButton');
-const selectedAcquisitionDate = document.getElementById('selectedAcquisitionDate');
-const saveAcquisitionButton = document.getElementById('saveAcquisition');
-const totalAcquisitionDisplay = document.getElementById('totalAcquisitionDisplay');
-
-// 양도가액 관련 요소
-const toggleTransferButton = document.getElementById('toggleTransferButton');
-const transferModal = document.getElementById('transferModal');
-const closeTransferModal = document.getElementById('closeTransferModal');
-const transferDateButton = document.getElementById('transferDateButton');
-const selectedTransferDate = document.getElementById('selectedTransferDate');
-const saveTransferButton = document.getElementById('saveTransfer');
-const totalTransferDisplay = document.getElementById('totalTransferDisplay');
-
-// 보유 기간 필드
-const holdingYearsDisplay = document.getElementById('holdingYearsDisplay');
-
-// 취득가액 모달 열기/닫기
-toggleAcquisitionButton.addEventListener('click', () => {
-    openModal(acquisitionModal);
-});
-
-closeAcquisitionModal.addEventListener('click', () => {
-    closeModal(acquisitionModal);
-});
-
-// 취득일 선택 버튼 로직
-acquisitionDateButton.addEventListener('click', () => {
-    const date = prompt('취득일을 입력하세요 (YYYY-MM-DD 형식)');
-    if (date) {
-        selectedAcquisitionDate.textContent = `선택한 날짜: ${date}`;
-        selectedAcquisitionDate.setAttribute('data-date', date); // 날짜 저장
-    }
-});
-
-// 취득가액 저장
-saveAcquisitionButton.addEventListener('click', () => {
+    // 취득가액 저장
+   saveAcquisitionButton.addEventListener('click', () => {
     // 취득가액 입력 필드 가져오기
     const acquisitionPriceElement = document.getElementById('acquisitionPrice');
 
     // 경비 항목 필드 가져오기
-    const acquisitionBrokerageFee = parseInt(document.getElementById('acquisitionBrokerageFee')?.value.replace(/,/g, '') || '0', 10);
-    const acquisitionLegalFee = parseInt(document.getElementById('acquisitionLegalFee')?.value.replace(/,/g, '') || '0', 10);
-    const acquisitionOtherExpenses = parseInt(document.getElementById('acquisitionOtherExpenses')?.value.replace(/,/g, '') || '0', 10);
+    const acquisitionBrokerageFee = parseInt(document.getElementById('acquisitionBrokerageFee').value.replace(/,/g, '') || '0', 10);
+    const acquisitionLegalFee = parseInt(document.getElementById('acquisitionLegalFee').value.replace(/,/g, '') || '0', 10);
+    const acquisitionOtherExpenses = parseInt(document.getElementById('acquisitionOtherExpenses').value.replace(/,/g, '') || '0', 10);
 
     // 경비 합산
     const totalExpenses = acquisitionBrokerageFee + acquisitionLegalFee + acquisitionOtherExpenses;
@@ -169,47 +147,18 @@ saveAcquisitionButton.addEventListener('click', () => {
 
     // 모달 닫기
     closeModal(acquisitionModal);
+    isAcquisitionModalOpen = false;
 });
 
-// 양도가액 모달 열기/닫기
-toggleTransferButton.addEventListener('click', () => {
-    openModal(transferModal);
+    // 필요경비 모달 열기/닫기
+toggleExpensesButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    openModal(expensesModal);
 });
 
-closeTransferModal.addEventListener('click', () => {
-    closeModal(transferModal);
-});
-
-// 양도일 선택 버튼 로직
-transferDateButton.addEventListener('click', () => {
-    const date = prompt('양도일을 입력하세요 (YYYY-MM-DD 형식)');
-    if (date) {
-        selectedTransferDate.textContent = `선택한 날짜: ${date}`;
-        selectedTransferDate.setAttribute('data-date', date); // 날짜 저장
-
-        // 보유 기간 계산
-        const acquisitionDate = new Date(selectedAcquisitionDate.getAttribute('data-date'));
-        const transferDate = new Date(date);
-
-        if (!isNaN(acquisitionDate) && !isNaN(transferDate)) {
-            const diffInMilliseconds = transferDate - acquisitionDate;
-            const diffInYears = diffInMilliseconds / (1000 * 60 * 60 * 24 * 365);
-            holdingYearsDisplay.value = diffInYears.toFixed(2); // 보유 기간 저장
-        } else {
-            holdingYearsDisplay.value = ''; // 초기화
-        }
-    }
-});
-
-// 양도가액 저장
-saveTransferButton.addEventListener('click', () => {
-    const transferPriceElement = document.getElementById('transferPrice');
-    const transferPrice = transferPriceElement ? parseInt(transferPriceElement.value.replace(/,/g, '') || '0', 10) : 0;
-
-    totalTransferDisplay.textContent = `총 양도가액: ${transferPrice.toLocaleString()} 원`;
-
-    // 모달 닫기
-    closeModal(transferModal);
+closeExpensesModal.addEventListener('click', (event) => {
+    event.preventDefault();
+    closeModal(expensesModal);
 });
 
 // 필요경비 저장
