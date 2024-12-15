@@ -66,7 +66,6 @@
 </div>
 
 <p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
-  
             
 <!-- 양도일 입력 -->
 <label for="transferDate">양도일:</label>
@@ -75,32 +74,35 @@
 <!-- 보유 기간 (숨기고 필요한 곳에서만 활용) -->
 <input type="text" id="holdingYearsDisplay" readonly style="display: none;">
 
-<!-- 양도가액 입력 -->
-<label for="transferPrice">양도가액 (원):</label>
-<input type="text" id="transferPrice" placeholder="금액 입력">
-       
-            <!-- 필요 경비 -->
-<button id="toggleExpensesButton" type="button">필요 경비</button>
-<div id="expensesModal" class="modal">
-    <h3>필요경비 입력</h3>
-    <ul class="expense-list">
-        <li>
-            <label for="acquisitionTaxAmount">자본적 지출:</label>
-            <input type="text" id="acquisitionTaxAmount" placeholder="금액 입력">
-        </li>
-        <li>
-            <label for="brokerageFeeAmount">중개 수수료:</label>
-            <input type="text" id="brokerageFeeAmount" placeholder="금액 입력">
-        </li>
-        <li>
-            <label for="legalFeeAmount">기타 경비:</label>
-            <input type="text" id="legalFeeAmount" placeholder="금액 입력">
-        </li>
-    </ul>
-    <button id="saveExpenses" type="button">저장</button>
-    <button id="closeExpensesModal" type="button">닫기</button>
+<!-- 양도가액 버튼 -->
+<button id="toggleTransferButton" type="button">양도가액</button>
+<div id="transferModal" class="modal" style="display: none;">
+    <h3>양도가액 입력</h3>
+    <p>양도가액에서 경비는 차감됩니다.</p>
+
+    <!-- 양도가액 입력 -->
+    <label for="transferPrice">양도가액 (원):</label>
+    <input type="text" id="transferPrice" placeholder="금액 입력"><br>
+
+    <!-- 중개사 비용 입력 -->
+    <label for="brokerageFee">중개사 비용 (원):</label>
+    <input type="text" id="brokerageFee" placeholder="금액 입력"><br>
+
+    <!-- 법무사 비용 입력 -->
+    <label for="legalFee">법무사 비용 (원):</label>
+    <input type="text" id="legalFee" placeholder="금액 입력"><br>
+
+    <!-- 기타 필요경비 입력 -->
+    <label for="otherExpenses">기타 필요경비 (원):</label>
+    <input type="text" id="otherExpenses" placeholder="금액 입력"><br>
+
+    <!-- 저장 및 닫기 버튼 -->
+    <button id="saveTransfer" type="button">저장</button>
+    <button id="closeTransferModal" type="button">닫기</button>
 </div>
-<p id="totalExpensesDisplay">총 필요경비: 0 원</p>
+
+<!-- 총 양도가액 결과 표시 -->
+<p id="totalTransferDisplay">총 양도가액: 0 원</p>
 
             <!-- 장기보유특별공제율 표시 (숨김 상태로 추가) -->
            <p id="deductionRateDisplay" style="display: none;"></p>
