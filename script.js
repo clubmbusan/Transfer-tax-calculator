@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isExpensesModalOpen = false;
         });
     }
+});
 
     // 계산 버튼 클릭 이벤트
 calculateButton.addEventListener('click', () => {
