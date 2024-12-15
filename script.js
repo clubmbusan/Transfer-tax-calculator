@@ -28,14 +28,17 @@ if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || 
     return;
 }
 
-    // 숫자 입력에 콤마 추가
+    // 숫자 입력에 콤마 추가 (모든 숫자 필드 적용)
     document.addEventListener('input', (event) => {
-        const target = event.target;
-        if (['acquisitionPrice', 'acquisitionCost', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
-            const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
-            target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
-        }
-    });
+    const target = event.target;
+    // 취득가액 및 경비 항목의 ID 확인
+    const numericFields = ['acquisitionPrice', 'acquisitionBrokerageFee', 'acquisitionLegalFee', 'acquisitionOtherExpenses'];
+    if (numericFields.includes(target.id)) {
+        const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+        target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
+    }
+});
+
 
     // 부동산 유형에 따라 필드 표시/숨김
     const updateFieldsByPropertyType = () => {
