@@ -15,7 +15,7 @@
             <select id="propertyType">
                 <option value="house" selected>주택</option>
                 <option value="commercial">토지/건물</option>
-               <option value="unregistered">미등기부동산(분양권등)</option>
+                <option value="unregistered">미등기부동산(분양권등)</option>
                 <option value="landForest">기타권리</option>
             </select>
 
@@ -36,77 +36,58 @@
             </div>
 
             <!-- 취득일 입력 -->
-<label for="acquisitionDate">취득일:</label>
-<input type="date" id="acquisitionDate">
+            <label for="acquisitionDate">취득일:</label>
+            <input type="date" id="acquisitionDate">
 
- <!-- 취득가액 버튼 -->
-<button id="toggleAcquisitionButton" type="button">취득 가액</button>
-<div id="acquisitionModal" class="modal" style="display: none;">
-    <h3>취득 비용 입력</h3>
+            <!-- 취득가액 버튼 -->
+            <button id="toggleAcquisitionButton" type="button">취득 가액</button>
+            <div id="acquisitionModal" class="modal" style="display: none;">
+                <h3>취득 비용 입력</h3>
 
-    <!-- 취득가액 -->
-    <label for="acquisitionPrice">취득가액 (원):</label>
-    <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
+                <label for="acquisitionPrice">취득가액 (원):</label>
+                <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
 
-    <!-- 중개비용 -->
-    <label for="brokerageFee">중개비용 (원):</label>
-    <input type="text" id="brokerageFee" placeholder="금액 입력"><br>
+                <label for="acquisitionBrokerageFee">중개비용 (원):</label>
+                <input type="text" id="acquisitionBrokerageFee" placeholder="금액 입력"><br>
 
-    <!-- 법무사 비용 -->
-    <label for="legalFee">법무사 비용 (원):</label>
-    <input type="text" id="legalFee" placeholder="금액 입력"><br>
+                <label for="acquisitionLegalFee">법무사 비용 (원):</label>
+                <input type="text" id="acquisitionLegalFee" placeholder="금액 입력"><br>
 
-    <!-- 기타 비용 -->
-    <label for="otherExpenses">기타 비용 (원):</label>
-    <input type="text" id="otherExpenses" placeholder="금액 입력"><br>
+                <label for="acquisitionOtherExpenses">기타 비용 (원):</label>
+                <input type="text" id="acquisitionOtherExpenses" placeholder="금액 입력"><br>
 
-    <!-- 저장 및 닫기 버튼 -->
-    <button id="saveAcquisition" type="button">저장</button>
-    <button id="closeAcquisitionModal" type="button">닫기</button>
-</div>
+                <button id="saveAcquisition" type="button">저장</button>
+                <button id="closeAcquisitionModal" type="button">닫기</button>
+            </div>
+            <p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
 
-<p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
-            
-<!-- 양도일 입력 -->
-<label for="transferDate">양도일:</label>
-<input type="date" id="transferDate">
+            <!-- 양도일 입력 -->
+            <label for="transferDate">양도일:</label>
+            <input type="date" id="transferDate">
 
-<!-- 보유 기간 (숨기고 필요한 곳에서만 활용) -->
-<input type="text" id="holdingYearsDisplay" readonly style="display: none;">
+            <!-- 양도가액 버튼 -->
+            <button id="toggleTransferButton" type="button">양도가액</button>
+            <div id="transferModal" class="modal" style="display: none;">
+                <h3>양도가액 입력</h3>
+                <p>양도가액에서 경비는 차감됩니다.</p>
 
-<!-- 양도가액 버튼 -->
-<button id="toggleTransferButton" type="button">양도가액</button>
-<div id="transferModal" class="modal" style="display: none;">
-    <h3>양도가액 입력</h3>
-    <p>양도가액에서 경비는 차감됩니다.</p>
+                <label for="transferPrice">양도가액 (원):</label>
+                <input type="text" id="transferPrice" placeholder="금액 입력"><br>
 
-    <!-- 양도가액 입력 -->
-    <label for="transferPrice">양도가액 (원):</label>
-    <input type="text" id="transferPrice" placeholder="금액 입력"><br>
+                <label for="transferBrokerageFee">중개사 비용 (원):</label>
+                <input type="text" id="transferBrokerageFee" placeholder="금액 입력"><br>
 
-    <!-- 중개사 비용 입력 -->
-    <label for="brokerageFee">중개사 비용 (원):</label>
-    <input type="text" id="brokerageFee" placeholder="금액 입력"><br>
+                <label for="transferLegalFee">법무사 비용 (원):</label>
+                <input type="text" id="transferLegalFee" placeholder="금액 입력"><br>
 
-    <!-- 법무사 비용 입력 -->
-    <label for="legalFee">법무사 비용 (원):</label>
-    <input type="text" id="legalFee" placeholder="금액 입력"><br>
+                <label for="transferOtherExpenses">기타 필요경비 (원):</label>
+                <input type="text" id="transferOtherExpenses" placeholder="금액 입력"><br>
 
-    <!-- 기타 필요경비 입력 -->
-    <label for="otherExpenses">기타 필요경비 (원):</label>
-    <input type="text" id="otherExpenses" placeholder="금액 입력"><br>
+                <button id="saveTransfer" type="button">저장</button>
+                <button id="closeTransferModal" type="button">닫기</button>
+            </div>
+            <p id="totalTransferDisplay">총 양도가액: 0 원</p>
 
-    <!-- 저장 및 닫기 버튼 -->
-    <button id="saveTransfer" type="button">저장</button>
-    <button id="closeTransferModal" type="button">닫기</button>
-</div>
-
-<!-- 총 양도가액 결과 표시 -->
-<p id="totalTransferDisplay">총 양도가액: 0 원</p>
-
-            <!-- 장기보유특별공제율 표시 (숨김 상태로 추가) -->
-           <p id="deductionRateDisplay" style="display: none;"></p>
-            
             <!-- 계산 버튼 -->
             <button id="calculateButton" type="button">계산하기</button>
         </form>
@@ -115,6 +96,6 @@
         <div id="result"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
