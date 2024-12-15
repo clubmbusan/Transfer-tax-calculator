@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAcquisitionModalOpen = false; // 취득가액 모달 상태
     let isTransferModalOpen = false; // 양도가액 모달 상태
 
-    // 숫자 입력에 콤마 추가/제거
+   // 숫자 입력에 콤마 추가/제거
     const handleCommaFormatting = (event) => {
         const target = event.target;
         const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
