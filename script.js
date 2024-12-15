@@ -266,19 +266,25 @@ let rawTax = 0; // 양도소득세
 let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
 
 console.log("6. 누진세율 계산 시작...");
-for (const bracket of taxBrackets) {
+for (let i = 0; i < taxBrackets.length; i++) {
+    const bracket = taxBrackets[i];
+    const previousLimit = i === 0 ? 0 : taxBrackets[i - 1].limit; // 이전 구간의 상한
+
     if (remainingProfit <= 0) break; // 남은 금액이 0 이하라면 중단
-    if (remainingProfit <= bracket.limit) {
-        // 현재 구간의 남은 금액을 모두 과세
-        const taxForBracket = remainingProfit * bracket.rate;
+
+    if (remainingProfit > previousLimit && remainingProfit <= bracket.limit) {
+        // 현재 구간의 남은 금액에 대해 과세
+        const taxableAmount = remainingProfit - previousLimit; // 구간 내 남은 금액
+        const taxForBracket = taxableAmount * bracket.rate;
         rawTax += taxForBracket;
         console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
         break;
-    } else {
-        // 현재 구간 한도까지만 과세
-        const taxForBracket = (bracket.limit - (taxBrackets[taxBrackets.indexOf(bracket) - 1]?.limit || 0)) * bracket.rate;
+    } else if (remainingProfit > bracket.limit) {
+        // 구간 한도까지 과세
+        const taxableAmount = bracket.limit - previousLimit;
+        const taxForBracket = taxableAmount * bracket.rate;
         rawTax += taxForBracket;
-        remainingProfit -= bracket.limit; // 남은 금액 갱신
+        remainingProfit -= taxableAmount; // 남은 금액 갱신
         console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
     }
 }
