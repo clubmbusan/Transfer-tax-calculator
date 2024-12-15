@@ -33,16 +33,17 @@ document.addEventListener('input', (event) => {
     const target = event.target;
 
     // 콤마를 적용할 모든 필드 ID 정의
-    const numericFields = [
-        'acquisitionPrice', 
-        'acquisitionBrokerageFee', 
-        'acquisitionLegalFee', 
-        'acquisitionOtherExpenses',
-        'transferPrice', 
-        'transferBrokerageFee', 
-        'transferLegalFee', 
-        'transferOtherExpenses'
-    ];
+const numericFields = [
+    'acquisitionPrice', 
+    'acquisitionBrokerageFee', 
+    'acquisitionLegalFee', 
+    'acquisitionOtherExpenses',
+    'transferPrice', 
+    'transferBrokerageFee', 
+    'transferLegalFee', 
+    'transferOtherExpenses',
+    'transferLegalServiceFee' // 법무사 수수료 추가
+];
 
     // 숫자 입력 필드 확인 후 콤마 추가
     if (numericFields.includes(target.id)) {
