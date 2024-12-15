@@ -39,18 +39,34 @@
 <label for="acquisitionDate">취득일:</label>
 <input type="date" id="acquisitionDate">
 
-    <!-- 취득가액 버튼 -->
+ <!-- 취득가액 버튼 -->
 <button id="toggleAcquisitionButton" type="button">취득 가액</button>
-<div id="acquisitionModal" class="modal">
-    <h3>취득가액 입력</h3>
+<div id="acquisitionModal" class="modal" style="display: none;">
+    <h3>취득 비용 입력</h3>
+
+    <!-- 취득가액 -->
     <label for="acquisitionPrice">취득가액 (원):</label>
     <input type="text" id="acquisitionPrice" placeholder="금액 입력"><br>
-    <label for="acquisitionCost">취득 경비 (원):</label>
-    <input type="text" id="acquisitionCost" placeholder="경비 입력"><br>
+
+    <!-- 중개비용 -->
+    <label for="brokerageFee">중개비용 (원):</label>
+    <input type="text" id="brokerageFee" placeholder="금액 입력"><br>
+
+    <!-- 법무사 비용 -->
+    <label for="legalFee">법무사 비용 (원):</label>
+    <input type="text" id="legalFee" placeholder="금액 입력"><br>
+
+    <!-- 기타 비용 -->
+    <label for="otherExpenses">기타 비용 (원):</label>
+    <input type="text" id="otherExpenses" placeholder="금액 입력"><br>
+
+    <!-- 저장 및 닫기 버튼 -->
     <button id="saveAcquisition" type="button">저장</button>
     <button id="closeAcquisitionModal" type="button">닫기</button>
 </div>
-<p id="totalAcquisitionDisplay">총 취득가액: 0 원</p> 
+
+<p id="totalAcquisitionDisplay">총 취득가액: 0 원</p>
+  
             
 <!-- 양도일 입력 -->
 <label for="transferDate">양도일:</label>
