@@ -156,11 +156,14 @@ closeExpensesModal.addEventListener('click', (event) => {
 saveExpensesButton.addEventListener('click', () => {
     let totalExpenses = 0;
 
-    // 각 입력 필드의 값을 읽어 합산
-    document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-        const value = input.value.replace(/,/g, ''); // 입력값에서 콤마 제거
-        totalExpenses += parseInt(value || '0', 10); // 숫자로 변환 후 합산
-    });
+    // 필요경비 항목 필드 가져오기
+    const transferBrokerageFee = parseInt(document.getElementById('transferBrokerageFee').value.replace(/,/g, '') || '0', 10); // 중개 수수료
+    const transferLegalFee = parseInt(document.getElementById('transferLegalFee').value.replace(/,/g, '') || '0', 10); // 기타 경비
+    const transferOtherExpenses = parseInt(document.getElementById('transferOtherExpenses').value.replace(/,/g, '') || '0', 10); // 기타 경비
+    const transferLegalServiceFee = parseInt(document.getElementById('transferLegalServiceFee').value.replace(/,/g, '') || '0', 10); // 법무사 수수료 (추가된 항목)
+
+    // 총 필요경비 계산
+    totalExpenses = transferBrokerageFee + transferLegalFee + transferOtherExpenses + transferLegalServiceFee;
 
     // 총 필요경비 표시
     totalExpensesDisplay.textContent = `총 필요경비: ${totalExpenses.toLocaleString()} 원`;
