@@ -138,10 +138,17 @@ button:hover {
     line-height: 1.6; /* 줄 간격 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
-/* 라벨에 자동 추가된 아이콘 제거 (우선순위 강제 적용) */
+/* 라벨 아이콘 제거 (가상 요소 및 배경 강제 삭제) */
 .expense-list li label::before,
 .expense-list li label::after {
-    content: none !important;
+    content: '' !important;
     display: none !important;
+    background: none !important;
 }
+
+/* 라벨 배경 이미지 제거 */
+.expense-list li label {
+    background: none !important;
+}
+
 
