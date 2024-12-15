@@ -22,16 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAcquisitionModalOpen = false; // 취득가액 모달 상태
     let isExpensesModalOpen = false; // 필요경비 모달 상태
 
-   // 방어 코드 추가: 모든 요소가 null인지 확인
-if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || !acquisitionDateInput || !transferDateInput || !calculateButton) {
-    console.error('필수 요소가 HTML에 누락되었습니다. HTML 구조를 점검하세요.');
-    return;
-}
+    // 방어 코드 추가: 모든 요소가 null인지 확인
+    if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || !acquisitionDateInput || !transferDateInput || !calculateButton) {
+        console.error('필수 요소가 HTML에 누락되었습니다. HTML 구조를 점검하세요.');
+        return;
+    }
 
     // 숫자 입력에 콤마 추가
     document.addEventListener('input', (event) => {
         const target = event.target;
-        if (['acquisitionPrice', 'acquisitionCost', 'transferPrice'].includes(target.id) || target.closest('#expensesModal')) {
+        if (['acquisitionPrice', 'brokerageFee', 'legalFee', 'otherExpenses', 'transferPrice', 'brokerageFeeTransfer', 'legalFeeTransfer', 'otherExpensesTransfer'].includes(target.id)) {
             const rawValue = target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
             target.value = rawValue ? parseInt(rawValue, 10).toLocaleString() : ''; // 콤마 추가
         }
@@ -74,8 +74,9 @@ if (!propertyTypeSelect || !regulatedAreaField || !singleHouseExemptionField || 
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
+});
 
-    // 모달 열기/닫기 공통 함수
+// 모달 열기/닫기 공통 함수
 const openModal = (modal) => {
     modal.style.display = 'block';
 };
@@ -142,7 +143,7 @@ saveAcquisitionButton.addEventListener('click', () => {
     isAcquisitionModalOpen = false;
 });
 
- // 필요경비 모달 열기/닫기
+// 필요경비 모달 열기/닫기
 toggleExpensesButton.addEventListener('click', (event) => {
     event.preventDefault();
     openModal(expensesModal);
@@ -168,15 +169,6 @@ saveExpensesButton.addEventListener('click', () => {
 
     // 모달 닫기
     closeModal(expensesModal);
-});
-
-// 필요경비 입력 필드 상태 관리
-document.querySelectorAll('#expensesModal input[type="text"]').forEach((input) => {
-    input.addEventListener('input', () => {
-        // 사용자가 값을 입력하면 자동으로 체크된 상태로 변경
-        const checkbox = document.getElementById(input.id.replace('Amount', ''));
-        if (checkbox) checkbox.checked = !!input.value.trim();
-    });
 });
    
 // 계산 버튼 클릭 이벤트
