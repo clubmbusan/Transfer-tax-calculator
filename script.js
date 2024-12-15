@@ -255,18 +255,32 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
-// 누진세율 계산
-let rawTax = 0;
-let remainingProfit = taxableProfitAfterDeduction;
+// 초기 값 디버깅
+console.log("1. 장기보유특별공제율:", (longTermDeductionRate * 100).toFixed(1), "%");
+console.log("2. 양도차익 (profit):", profit.toLocaleString(), "원");
+console.log("3. 과세표준 (기본공제 전):", taxableProfit.toLocaleString(), "원");
+console.log("4. 기본공제:", basicDeduction.toLocaleString(), "원");
+console.log("5. 과세표준 (기본공제 후):", taxableProfitAfterDeduction.toLocaleString(), "원");
 
+// 누진세율 계산
+let rawTax = 0; // 누진세율을 통해 계산된 양도소득세
+let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+
+console.log("6. 누진세율 계산 시작...");
 for (const bracket of taxBrackets) {
     if (remainingProfit <= 0) break;
     if (remainingProfit <= bracket.limit) {
-        rawTax += remainingProfit * bracket.rate;
+        // 현재 구간에 남은 과세표준을 모두 적용
+        const taxForBracket = remainingProfit * bracket.rate;
+        rawTax += taxForBracket;
+        console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
         break;
     } else {
-        rawTax += bracket.limit * bracket.rate;
+        // 현재 구간 한도까지 과세
+        const taxForBracket = bracket.limit * bracket.rate;
+        rawTax += taxForBracket;
         remainingProfit -= bracket.limit;
+        console.log(` - 구간 ${bracket.limit.toLocaleString()} 원: ${taxForBracket.toLocaleString()} 원 (세율 ${bracket.rate * 100}%)`);
     }
 }
 
@@ -274,10 +288,17 @@ for (const bracket of taxBrackets) {
 const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
 rawTax -= applicableDeduction;
 
+console.log("7. 누진공제:", applicableDeduction.toLocaleString(), "원");
+console.log("8. 누진공제 적용 후 양도소득세 (rawTax):", rawTax.toLocaleString(), "원");
+
 // 부가세 계산
-const educationTax = Math.floor(rawTax * 0.1);
-const ruralTax = Math.floor(rawTax * 0.2);
+const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
+const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
 const totalTax = rawTax + educationTax + ruralTax;
+
+console.log("9. 지방교육세 (educationTax):", educationTax.toLocaleString(), "원");
+console.log("10. 농어촌특별세 (ruralTax):", ruralTax.toLocaleString(), "원");
+console.log("11. 총 세금 (totalTax):", totalTax.toLocaleString(), "원");
 
 // 결과 출력
 document.getElementById('result').innerHTML = `
