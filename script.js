@@ -90,21 +90,22 @@ const numericFields = [
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
    
-    // 모달 입력 필드를 초기화하는 공통 함수
-      const resetFields = (modalId) => {
-      document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
-          input.value = ''; // 입력 필드 값 초기화
-        });
-     };
+  // 모달 입력 필드를 초기화하는 공통 함수
+const resetFields = (modalId) => {
+    document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
+        input.value = ''; // 입력 필드 값 초기화
+    });
+};
 
-     // 모달 열기/닫기 공통 함수
-       const openModal = (modal) => {
-       modal.style.display = 'block';
-     };
+// 모달 열기/닫기 공통 함수
+const openModal = (modal) => {
+    modal.style.display = 'block';
+};
 
-       const closeModal = (modal) => {
-       modal.style.display = 'none';
-      };
+const closeModal = (modal, modalId) => {
+    modal.style.display = 'none';
+    if (modalId) resetFields(modalId); // 모달 닫을 때 입력 필드 초기화
+};
 
     // 취득가액 모달 열기/닫기
     toggleAcquisitionButton.addEventListener('click', (event) => {
