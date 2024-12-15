@@ -219,30 +219,24 @@ calculateButton.addEventListener('click', () => {
         taxRate = 0.2; // 기타 권리는 고정 세율로 20%
     }
 
-    // 과세표준 계산 (장기보유특별공제 반영)
-    let taxableProfit = profit * (1 - longTermDeductionRate);
+   // 과세표준 계산 (장기보유특별공제 반영)
+let taxableProfit = profit * (1 - longTermDeductionRate);
 
-    console.log("1. 장기보유특별공제 반영 후 과세표준 (taxableProfit): ", taxableProfit.toLocaleString());
-
-    // 비과세 조건 적용
-    if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
-        if (holdingYearsInt >= 2) { // 보유기간 2년 이상
-            const taxExemptLimit = 1200000000; // 비과세 한도 12억
-            if (transferPrice <= taxExemptLimit) {
-                taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
-            } else {
-                taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
-            }
+// 비과세 조건 적용
+if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
+    if (holdingYearsInt >= 2) { // 보유기간 2년 이상
+        const taxExemptLimit = 1200000000; // 비과세 한도 12억
+        if (transferPrice <= taxExemptLimit) {
+            taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
+        } else {
+            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
         }
     }
+}
 
-    console.log("2. 비과세 조건 적용 후 과세표준 (taxableProfit): ", taxableProfit.toLocaleString());
-
-    // 기본공제 적용 (과세표준에서 차감)
-    const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
-    let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
-
-    console.log("3. 기본공제 적용 후 과세표준 (taxableProfitAfterDeduction): ", taxableProfitAfterDeduction.toLocaleString());
+// 기본공제 적용 (과세표준에서 차감)
+const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
+let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
  
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
