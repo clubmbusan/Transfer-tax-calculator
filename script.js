@@ -223,35 +223,39 @@ calculateButton.addEventListener('click', () => {
     }
 
     // 기본 세율 및 장기보유특별공제율 계산
-    let taxRate = 0;
-    let surcharge = 0;
-    let longTermDeductionRate = 0;
+let taxRate = 0;
+let surcharge = 0;
+let longTermDeductionRate = 0;
+let longTermDeductionAmount = 0; // 장기보유특별공제 금액
 
-    if (propertyTypeSelect.value === 'house') {
-        const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
-        const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
+if (propertyTypeSelect.value === 'house') {
+    const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
+    const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
 
-        if (singleHouseExemption) {
-            longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
-        } else {
-            longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
-        }
-
-        taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
-        surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
-    } else if (propertyTypeSelect.value === 'landForest') {
-        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
-        taxRate = 0.15; // 기본 세율
-    } else if (propertyTypeSelect.value === 'unregistered') {
-        longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
-        taxRate = 0.7; // 고정 세율 70%
-    } else if (propertyTypeSelect.value === 'others') {
-        longTermDeductionRate = 0;
-        taxRate = 0.2; // 기타 권리는 고정 세율로 20%
+    if (singleHouseExemption) {
+        longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
+    } else {
+        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
     }
 
-   // 과세표준 계산 (장기보유특별공제 반영)
-let taxableProfit = profit * (1 - longTermDeductionRate);
+    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율 설정
+    surcharge = regulatedArea ? 0.1 : 0; // 조정대상지역 중과세율
+} else if (propertyTypeSelect.value === 'landForest') {
+    longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
+    taxRate = 0.15; // 기본 세율
+} else if (propertyTypeSelect.value === 'unregistered') {
+    longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
+    taxRate = 0.7; // 고정 세율 70%
+} else if (propertyTypeSelect.value === 'others') {
+    longTermDeductionRate = 0;
+    taxRate = 0.2; // 기타 권리는 고정 세율로 20%
+}
+
+// 장기보유특별공제 금액 계산
+longTermDeductionAmount = profit * longTermDeductionRate;
+
+// 과세표준 계산 (장기보유특별공제 반영)
+let taxableProfit = profit - longTermDeductionAmount;
 
 // 비과세 조건 적용
 if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
@@ -263,15 +267,12 @@ if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
             taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0);
         }
     }
-} else {
-    // 1세대 1주택 비과세가 아닌 경우는 일반 로직으로 처리
-    taxableProfit = profit; 
 }
 
 // 기본공제 적용 (과세표준에서 차감)
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
 let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
- 
+
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
     { limit: 12000000, rate: 0.06, deduction: 0 },
@@ -314,6 +315,7 @@ document.getElementById('result').innerHTML = `
     <p>보유 기간: ${holdingYearsInt} 년</p>
     <p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>
     <p>양도차익: ${profit.toLocaleString()} 원</p>
+    <p>장기보유특별공제 금액: ${longTermDeductionAmount.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 전): ${taxableProfit.toLocaleString()} 원</p>
     <p>기본공제: ${basicDeduction.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
@@ -322,7 +324,3 @@ document.getElementById('result').innerHTML = `
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
 `;
-
-});
-  
-}); // <== 마지막 닫는 괄호 추가
