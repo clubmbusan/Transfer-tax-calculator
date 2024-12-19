@@ -324,4 +324,5 @@ document.getElementById('result').innerHTML = `
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
 `;
+ });   
 }); // DOMContentLoaded 끝
