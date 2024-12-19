@@ -18,19 +18,15 @@
                <option value="unregistered">미등기부동산(분양권등)</option>
                 <option value="landForest">기타권리</option>
             </select>
-          
-            <!-- 조정대상지역 여부 및 거주기간  1세대 1주택 여부 -->
-             <div>
+
+            <!-- 조정대상지역 및 1세대 1주택 여부 -->
+            <div id="regulatedAreaField">
                 <label for="regulatedArea">조정대상지역 여부:</label>
-                   <select id="regulatedArea">
-                   <option value="no" selected>아니오</option>
-                   <option value="yes">예</option>
+                <select id="regulatedArea">
+                    <option value="no" selected>아니오</option>
+                    <option value="yes">예</option>
                 </select>
-              <span id="residenceYearsWrapper" style="display: none; margin-left: 10px;">
-                 <label for="residenceYears">(거주기간):</label>
-                 <input type="number" id="residenceYears" placeholder="년" min="0" step="1">
-              </span>
-           </div>
+            </div>
             <div id="singleHouseExemptionField">
                 <label for="singleHouseExemption">1세대 1주택 여부:</label>
                 <select id="singleHouseExemption">
