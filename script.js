@@ -89,8 +89,19 @@ const numericFields = [
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
-   
-  // 모달 입력 필드를 초기화하는 공통 함수
+
+    // 조정대상지역 선택 시 거주기간 입력 활성화/비활성화
+    document.getElementById('regulatedArea').addEventListener('change', (event) => {
+        const residenceYearsWrapper = document.getElementById('residenceYearsWrapper');
+        if (event.target.value === 'yes') {
+            residenceYearsWrapper.style.display = 'inline-block'; // 거주기간 입력 활성화
+        } else {
+            residenceYearsWrapper.style.display = 'none'; // 거주기간 입력 숨김
+            document.getElementById('residenceYears').value = ''; // 거주기간 초기화
+        }
+    });
+
+     // 모달 입력 필드를 초기화하는 공통 함수
 const resetFields = (modalId) => {
     document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
         input.value = ''; // 입력 필드 값 초기화
