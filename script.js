@@ -89,19 +89,8 @@ const numericFields = [
 
     acquisitionDateInput.addEventListener('change', calculateHoldingYears);
     transferDateInput.addEventListener('change', calculateHoldingYears);
-
-    // 조정대상지역 선택 시 거주기간 입력 활성화/비활성화
-    document.getElementById('regulatedArea').addEventListener('change', (event) => {
-        const residenceYearsWrapper = document.getElementById('residenceYearsWrapper');
-        if (event.target.value === 'yes') {
-            residenceYearsWrapper.style.display = 'inline-block'; // 거주기간 입력 활성화
-        } else {
-            residenceYearsWrapper.style.display = 'none'; // 거주기간 입력 숨김
-            document.getElementById('residenceYears').value = ''; // 거주기간 초기화
-        }
-    });
-
-     // 모달 입력 필드를 초기화하는 공통 함수
+   
+  // 모달 입력 필드를 초기화하는 공통 함수
 const resetFields = (modalId) => {
     document.querySelectorAll(`#${modalId} input[type="text"]`).forEach((input) => {
         input.value = ''; // 입력 필드 값 초기화
@@ -306,37 +295,29 @@ const taxBrackets = [
 ];
 
 // 양도소득세 계산
-let rawTax = 0; // 양도소득세 초기화
+let rawTax = 0; // 양도소득세
 let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
 
 for (let i = 0; i < taxBrackets.length; i++) {
     const bracket = taxBrackets[i];
     const previousLimit = i === 0 ? 0 : taxBrackets[i - 1].limit; // 이전 구간의 상한
 
-    // 남은 과세표준이 현재 구간에 포함되는지 확인
-    if (remainingProfit <= 0) break; // 남은 과세표준이 0 이하이면 종료
-
-    // 현재 구간에서 과세할 금액 계산
-    const taxableAmount = Math.min(bracket.limit - previousLimit, remainingProfit);
-
-    // 현재 구간에서 과세할 세금 계산
-    const taxForBracket = taxableAmount * bracket.rate;
-
-    // 세금 누적
-    rawTax += taxForBracket;
-
-    // 남은 과세표준에서 현재 구간 금액 차감
-    remainingProfit -= taxableAmount;
+    // 현재 구간에서 남은 금액 계산
+    if (remainingProfit <= 0) break; // 남은 금액이 없으면 종료
+    const taxableAmount = Math.min(bracket.limit - previousLimit, remainingProfit); // 현재 구간에서 과세할 금액
+    const taxForBracket = taxableAmount * bracket.rate; // 현재 구간의 세금 계산
+    rawTax += taxForBracket; // 세금 누적
+    remainingProfit -= taxableAmount; // 남은 금액 갱신
 }
 
 // 누진공제 적용
 const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
-rawTax -= applicableDeduction; // 누진공제 차감
+rawTax -= applicableDeduction;
 
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
 const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-const totalTax = rawTax + educationTax + ruralTax; // 총 세금 계산
+const totalTax = rawTax + educationTax + ruralTax;
 
 // 결과 출력
 document.getElementById('result').innerHTML = `
