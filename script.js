@@ -254,15 +254,18 @@ calculateButton.addEventListener('click', () => {
 let taxableProfit = profit * (1 - longTermDeductionRate);
 
 // 비과세 조건 적용
-if (propertyTypeSelect.value === 'house' && singleHouseExemption) {
-    if (holdingYearsInt >= 2) { // 보유기간 2년 이상
-        const taxExemptLimit = 1200000000; // 비과세 한도 12억
+if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
+    if (holdingYearsInt >= 2) {
+        const taxExemptLimit = 1200000000;
         if (transferPrice <= taxExemptLimit) {
-            taxableProfit = 0; // 12억 이하 양도가액 전액 비과세
+            taxableProfit = 0;
         } else {
-            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0); // 12억 초과분만 과세
+            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0);
         }
     }
+} else {
+    // 1세대 1주택 비과세가 아닌 경우는 일반 로직으로 처리
+    taxableProfit = profit; 
 }
 
 // 기본공제 적용 (과세표준에서 차감)
