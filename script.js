@@ -315,10 +315,10 @@ for (let i = 0; i < taxBrackets.length; i++) {
 const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
 rawTax -= applicableDeduction;
 
-// 부가세 계산
+// 부가세 계산 (소수점 절사 처리 추가)
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
 const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-const totalTax = rawTax + educationTax + ruralTax;
+const totalTax = Math.floor(rawTax + educationTax + ruralTax); // 총 세금 절사 처리
 
 // 결과 출력
 document.getElementById('result').innerHTML = `
@@ -330,10 +330,11 @@ document.getElementById('result').innerHTML = `
     <p>과세표준 (기본공제 전): ${taxableProfit.toLocaleString()} 원</p>
     <p>기본공제: ${basicDeduction.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-    <p>양도소득세: ${rawTax.toLocaleString()} 원</p>
+    <p>양도소득세: ${Math.floor(rawTax).toLocaleString()} 원</p>
     <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
 `;
+
  });   
 }); // DOMContentLoaded 끝
