@@ -341,16 +341,17 @@ const totalTax = Math.floor(rawTax + educationTax + ruralTax); // 총 세금 절
 document.getElementById('result').innerHTML = `
     <h3>계산 결과</h3>
     <p>보유 기간: ${holdingYearsInt} 년</p>
-    <p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>
+    <p>장기보유특별공제율 (주택): ${(longTermDeductionRate_House * 100).toFixed(1)}%</p>
+    <p>장기보유특별공제율 (토지/건물): ${(longTermDeductionRate_Business * 100).toFixed(1)}%</p>
     <p>양도차익: ${profit.toLocaleString()} 원</p>
-    <p>장기보유특별공제 금액: ${longTermDeductionAmount.toLocaleString()} 원</p>
+    <p>장기보유특별공제 금액: ${totalLongTermDeduction.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 전): ${taxableProfit.toLocaleString()} 원</p>
     <p>기본공제: ${basicDeduction.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-    <p>양도소득세: ${Math.floor(rawTax).toLocaleString()} 원</p>
-    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
-    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
-    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
+    <p>양도소득세: ${Math.floor(taxableProfitAfterDeduction * taxRate).toLocaleString()} 원</p>
+    <p>지방교육세: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 0.1)).toLocaleString()} 원</p>
+    <p>농어촌특별세: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 0.2)).toLocaleString()} 원</p>
+    <p><strong>총 세금: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 1.3)).toLocaleString()} 원</strong></p>
 `;
 
  });   
