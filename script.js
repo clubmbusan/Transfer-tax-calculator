@@ -222,76 +222,53 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
-  // ✅ 부동산 유형 가져오기
-const propertyType = propertyTypeSelect.value;
-
-// ✅ 변수 초기화 (순서 조정)
-const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
-const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
-const isMultiHouseOwner = document.getElementById('singleHouseExemption').value === 'no'; // 다주택 여부
-
-// ✅ 기본 세율 및 중과세율 설정 (기존 코드 유지)
+    // 기본 세율 및 장기보유특별공제율 계산
 let taxRate = 0;
 let surcharge = 0;
+let longTermDeductionRate = 0;
+let longTermDeductionAmount = 0; // 장기보유특별공제 금액
 
-if (propertyType === 'house') {
-    taxRate = regulatedArea ? 0.2 : 0.1; // ✅ 기본 세율: 조정대상지역 20%, 비조정대상지역 10%
-    surcharge = regulatedArea ? 0.1 : 0; // ✅ 중과세율: 조정대상지역 추가 10%, 비조정대상지역 없음
-} else if (propertyType === 'landForest') {
-    taxRate = 0.15; // ✅ 토지/임야 기본 세율 15%
-} else if (propertyType === 'unregistered') {
-    taxRate = 0.7; // ✅ 미등기 부동산 고정 세율 70%
-} else if (propertyType === 'others') {
-    taxRate = 0.2; // ✅ 기타 권리 고정 세율 20%
-}
+if (propertyTypeSelect.value === 'house') {
+    const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
+    const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
+    const isMultiHouseOwner = document.getElementById('singleHouseExemption').value === 'no'; // 다주택 여부
 
-// ✅ 최종 적용된 세율 확인 (디버깅용)
-console.log(`부동산 유형: ${propertyType}, 기본 세율: ${taxRate}, 중과세율: ${surcharge}`);
-
-// ✅ 장기보유특별공제율 계산
-let longTermDeductionRate_House = 0;  // 주택 장기보유특별공제율
-let longTermDeductionRate_Business = 0;  // 사업용 건물/토지 장기보유특별공제율
-let longTermDeductionAmount_House = 0;
-let longTermDeductionAmount_Business = 0;
-
-// ✅ **1세대 1주택 장기보유특별공제 (최대 80%)**
-if (propertyType === 'house') {
     if (regulatedArea && isMultiHouseOwner) {
-        longTermDeductionRate_House = 0; // 조정대상지역 다주택자는 공제 없음
+        // 조정대상지역 다주택자는 공제율 0%
+        longTermDeductionRate = 0;
     } else if (singleHouseExemption) {
-        longTermDeductionRate_House = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0; // 연 4%, 최대 80%
+        // 1세대 1주택자: 보유기간에 따라 최대 80% 공제율 적용
+        longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
     } else {
-        longTermDeductionRate_House = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0; // 다주택자 (조정대상지역 아님): 최대 30%
+        // 다주택자 (조정대상지역 아님): 보유기간에 따라 최대 30% 공제율 적용
+        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
     }
+
+    // 기본 세율 및 중과세율 설정
+    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율: 조정대상지역은 20%, 비조정대상지역은 10%
+    surcharge = regulatedArea ? 0.1 : 0; // 중과세율: 조정대상지역은 추가 10%, 비조정대상지역은 0%
+} else if (propertyTypeSelect.value === 'landForest') {
+    // 토지/임야의 경우
+    longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
+    taxRate = 0.15; // 기본 세율 15%
+} else if (propertyTypeSelect.value === 'unregistered') {
+    // 미등기부동산의 경우
+    longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
+    taxRate = 0.7; // 고정 세율 70%
+} else if (propertyTypeSelect.value === 'others') {
+    // 기타 권리
+    longTermDeductionRate = 0;
+    taxRate = 0.2; // 기타 권리는 고정 세율 20%
 }
 
-// ✅ **사업용 건물/토지 장기보유특별공제 (최대 30%)**
-else if (propertyType === 'commercial') {
-    if (holdingYearsInt >= 3) {
-        longTermDeductionRate_Business = Math.min((holdingYearsInt - 3) * 0.02 + 0.06, 0.3); // 3년 6%, 이후 연 2%, 최대 30%
-    }
-}
+// 장기보유특별공제 금액 계산
+longTermDeductionAmount = profit * longTermDeductionRate;
 
-// ✅ **토지/임야 (비사업용 토지)**
-else if (propertyType === 'landForest') {
-    longTermDeductionRate_Business = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0; // 3년 3%, 최대 30%
-}
+// 과세표준 계산 (장기보유특별공제 반영)
+let taxableProfit = profit - longTermDeductionAmount;
 
-// ✅ **미등기 부동산 & 기타 권리는 공제 없음**
-else if (propertyType === 'unregistered' || propertyType === 'others') {
-    longTermDeductionRate_Business = 0;
-}
-
-// ✅ **장기보유특별공제 금액 계산**
-longTermDeductionAmount_House = profit * longTermDeductionRate_House;
-longTermDeductionAmount_Business = profit * longTermDeductionRate_Business;
-const totalLongTermDeduction = longTermDeductionAmount_House + longTermDeductionAmount_Business;
-
-// ✅ **과세표준 계산 (장기보유특별공제 반영)**
-let taxableProfit = profit - totalLongTermDeduction;
-
-// ✅ **1세대 1주택 비과세 조건 적용**
-if (propertyType === 'house' && singleHouseExemption) {
+// 비과세 조건 적용
+if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
     if (holdingYearsInt >= 2) {
         const taxExemptLimit = 1200000000;
         if (transferPrice <= taxExemptLimit) {
@@ -302,23 +279,19 @@ if (propertyType === 'house' && singleHouseExemption) {
     }
 }
 
-// ✅ **기본공제 적용**
-const basicDeduction = propertyType !== 'unregistered' ? 2500000 : 0;
-let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0);
-
-// ✅ **디버깅을 위한 로그 출력**
-console.log(`과세표준 (기본공제 후): ${taxableProfitAfterDeduction}`);
+// 기본공제 적용 (과세표준에서 차감)
+const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
+let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
 
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
-    { limit: 14000000, rate: 0.06, deduction: 0 },
-    { limit: 50000000, rate: 0.15, deduction: 1260000 },
-    { limit: 88000000, rate: 0.24, deduction: 5760000 },
-    { limit: 150000000, rate: 0.35, deduction: 14940000 },
-    { limit: 300000000, rate: 0.38, deduction: 19940000 },
-    { limit: 500000000, rate: 0.40, deduction: 25940000 },
-    { limit: 1000000000, rate: 0.42, deduction: 35940000 },
-    { limit: Infinity, rate: 0.45, deduction: 65940000 }
+    { limit: 12000000, rate: 0.06, deduction: 0 },
+    { limit: 46000000, rate: 0.15, deduction: 1080000 },
+    { limit: 88000000, rate: 0.24, deduction: 5220000 },
+    { limit: 150000000, rate: 0.35, deduction: 14900000 },
+    { limit: 300000000, rate: 0.38, deduction: 19400000 },
+    { limit: 500000000, rate: 0.40, deduction: 25400000 },
+    { limit: Infinity, rate: 0.45, deduction: 45400000 }
 ];
 
 // 양도소득세 계산
@@ -341,27 +314,25 @@ for (let i = 0; i < taxBrackets.length; i++) {
 const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
 rawTax -= applicableDeduction;
 
-// 부가세 계산 (소수점 절사 처리 추가)
+// 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
 const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-const totalTax = Math.floor(rawTax + educationTax + ruralTax); // 총 세금 절사 처리
+const totalTax = rawTax + educationTax + ruralTax;
 
 // 결과 출력
 document.getElementById('result').innerHTML = `
     <h3>계산 결과</h3>
     <p>보유 기간: ${holdingYearsInt} 년</p>
-    <p>장기보유특별공제율 (주택): ${(longTermDeductionRate_House * 100).toFixed(1)}%</p>
-    <p>장기보유특별공제율 (토지/건물): ${(longTermDeductionRate_Business * 100).toFixed(1)}%</p>
+    <p>장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%</p>
     <p>양도차익: ${profit.toLocaleString()} 원</p>
-    <p>장기보유특별공제 금액: ${totalLongTermDeduction.toLocaleString()} 원</p>
+    <p>장기보유특별공제 금액: ${longTermDeductionAmount.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 전): ${taxableProfit.toLocaleString()} 원</p>
     <p>기본공제: ${basicDeduction.toLocaleString()} 원</p>
     <p>과세표준 (기본공제 후): ${taxableProfitAfterDeduction.toLocaleString()} 원</p>
-    <p>양도소득세: ${Math.floor(taxableProfitAfterDeduction * taxRate).toLocaleString()} 원</p>
-    <p>지방교육세: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 0.1)).toLocaleString()} 원</p>
-    <p>농어촌특별세: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 0.2)).toLocaleString()} 원</p>
-    <p><strong>총 세금: ${(Math.floor(taxableProfitAfterDeduction * taxRate * 1.3)).toLocaleString()} 원</strong></p>
+    <p>양도소득세: ${rawTax.toLocaleString()} 원</p>
+    <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
+    <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
+    <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
 `;
-
  });   
 }); // DOMContentLoaded 끝
