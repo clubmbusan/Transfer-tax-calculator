@@ -222,20 +222,18 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
-   // 기본 세율 및 중과세율 설정
+   // ✅ 기본 세율 및 중과세율 설정 (기존 코드 유지)
+let taxRate = 0;
+let surcharge = 0;
+
+if (propertyTypeSelect.value === 'house') {
     taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율: 조정대상지역은 20%, 비조정대상지역은 10%
     surcharge = regulatedArea ? 0.1 : 0; // 중과세율: 조정대상지역은 추가 10%, 비조정대상지역은 0%
 } else if (propertyTypeSelect.value === 'landForest') {
-    // 토지/임야의 경우
-    longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
     taxRate = 0.15; // 기본 세율 15%
 } else if (propertyTypeSelect.value === 'unregistered') {
-    // 미등기부동산의 경우
-    longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
     taxRate = 0.7; // 고정 세율 70%
 } else if (propertyTypeSelect.value === 'others') {
-    // 기타 권리
-    longTermDeductionRate = 0;
     taxRate = 0.2; // 기타 권리는 고정 세율 20%
 }
     
