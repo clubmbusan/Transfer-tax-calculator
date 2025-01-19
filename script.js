@@ -278,81 +278,13 @@ if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
         }
     }
 }
-// 기본 세율 및 장기보유특별공제율 계산(토지/건물)
-let taxRate = 0;
-let surcharge = 0;
-let longTermDeductionRate = 0;
-let longTermDeductionAmount = 0; // 장기보유특별공제 금액
 
-if (propertyTypeSelect.value === 'house') {
-    const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
-    const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
-    const isMultiHouseOwner = document.getElementById('singleHouseExemption').value === 'no'; // 다주택 여부
-
-    if (regulatedArea && isMultiHouseOwner) {
-        // 조정대상지역 다주택자는 공제율 0%
-        longTermDeductionRate = 0;
-    } else if (singleHouseExemption) {
-        // 1세대 1주택자: 보유기간에 따라 최대 80% 공제율 적용
-        longTermDeductionRate = holdingYearsInt >= 2 ? Math.min(holdingYearsInt * 0.04, 0.8) : 0;
-    } else {
-        // 다주택자 (조정대상지역 아님): 보유기간에 따라 최대 30% 공제율 적용
-        longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.02, 0.3) : 0;
-    }
-
-    // 기본 세율 및 중과세율 설정
-    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율: 조정대상지역은 20%, 비조정대상지역은 10%
-    surcharge = regulatedArea ? 0.1 : 0; // 중과세율: 조정대상지역은 추가 10%, 비조정대상지역은 0%
-} 
-
-// ✅ **토지/건물(상업용 부동산) 장기보유특별공제 추가**
+// ✅ **여기 아래에 "토지/건물" 장기보유특별공제 추가!**
 else if (propertyTypeSelect.value === 'commercial') {
     if (holdingYearsInt >= 3) {
-        longTermDeductionRate = Math.min((holdingYearsInt - 3) * 0.02 + 0.06, 0.3); // 3년 6%, 이후 연 2%, 최대 30%
-    }
-    taxRate = 0.1; // 사업용 건물/토지 기본 세율
-}
-
-// 기존 코드 유지 (토지/임야, 미등기부동산, 기타)
-else if (propertyTypeSelect.value === 'landForest') {
-    // 토지/임야의 경우
-    longTermDeductionRate = holdingYearsInt >= 3 ? Math.min(holdingYearsInt * 0.03, 0.3) : 0;
-    taxRate = 0.15; // 기본 세율 15%
-} else if (propertyTypeSelect.value === 'unregistered') {
-    // 미등기부동산의 경우
-    longTermDeductionRate = 0; // 미등기부동산은 장기보유특별공제 없음
-    taxRate = 0.7; // 고정 세율 70%
-} else if (propertyTypeSelect.value === 'others') {
-    // 기타 권리
-    longTermDeductionRate = 0;
-    taxRate = 0.2; // 기타 권리는 고정 세율 20%
-}
-
-// 장기보유특별공제 금액 계산
-longTermDeductionAmount = profit * longTermDeductionRate;
-
-// 과세표준 계산 (장기보유특별공제 반영)
-let taxableProfit = profit - longTermDeductionAmount;
-
-// 비과세 조건 적용
-if (propertyTypeSelect.value === 'house' && singleHouseExemption === 'yes') {
-    if (holdingYearsInt >= 2) {
-        const taxExemptLimit = 1200000000;
-        if (transferPrice <= taxExemptLimit) {
-            taxableProfit = 0;
-        } else {
-            taxableProfit = Math.max(profit - (taxExemptLimit - acquisitionPrice), 0);
-        }
+        longTermDeductionRate = Math.min((holdingYearsInt - 3) * 0.02 + 0.06, 0.3);
     }
 }
-
-// ✅ 디버깅용 콘솔 로그 (값 확인)
-console.log(`부동산 유형: ${propertyTypeSelect.value}`);
-console.log(`장기보유특별공제율: ${(longTermDeductionRate * 100).toFixed(1)}%`);
-console.log(`장기보유특별공제 금액: ${longTermDeductionAmount.toLocaleString()} 원`);
-console.log(`과세표준 (기본공제 후): ${taxableProfit.toLocaleString()} 원`);
-
-    
     
 // 기본공제 적용 (과세표준에서 차감) --공용
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
