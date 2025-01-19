@@ -313,14 +313,15 @@ let rawTax = 0;
 let remainingProfit = taxableProfitAfterDeduction;
 let applicableDeduction = 0;
 
-for (let i = taxBrackets.length - 1; i >= 0; i--) {
+for (let i = 0; i < taxBrackets.length; i++) {
     const bracket = taxBrackets[i];
 
     if (remainingProfit > bracket.limit) {
-        rawTax += (remainingProfit - bracket.limit) * bracket.rate;
+        const taxableAmount = remainingProfit - bracket.limit;
+        rawTax += taxableAmount * bracket.rate;
         remainingProfit = bracket.limit;
 
-        // ✅ 마지막으로 적용된 세율의 공제액 저장
+        // ✅ 현재 구간이 적용된 구간이라면 해당 구간의 누진공제값 저장
         applicableDeduction = bracket.deduction;
     }
 }
@@ -328,7 +329,7 @@ for (let i = taxBrackets.length - 1; i >= 0; i--) {
 // ✅ 누진공제 적용
 rawTax -= applicableDeduction;
 rawTax = Math.max(0, rawTax); // 음수 방지
-
+    
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
 const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
