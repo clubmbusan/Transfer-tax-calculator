@@ -311,24 +311,25 @@ const taxBrackets = [
 // ✅ 양도소득세 계산 (누진세율 단계별 적용)
 let rawTax = 0;
 let remainingProfit = taxableProfitAfterDeduction;
-let applicableDeduction = 0;
 
-for (let i = 0; i < taxBrackets.length; i++) {
+for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
 
     if (remainingProfit > bracket.limit) {
         const taxableAmount = remainingProfit - bracket.limit;
         rawTax += taxableAmount * bracket.rate;
-        remainingProfit = bracket.limit;
-
-        // ✅ 현재 구간이 적용된 구간이라면 해당 구간의 누진공제값 저장
-        applicableDeduction = bracket.deduction;
+        remainingProfit = bracket.limit;  // 다음 단계로 이동
     }
 }
 
 // ✅ 누진공제 적용
+let applicableDeduction = 0;
+for (let i = 0; i < taxBrackets.length; i++) {
+    if (taxableProfitAfterDeduction > taxBrackets[i].limit) {
+        applicableDeduction = taxBrackets[i].deduction;
+    }
+}
 rawTax -= applicableDeduction;
-rawTax = Math.max(0, rawTax); // 음수 방지
     
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
