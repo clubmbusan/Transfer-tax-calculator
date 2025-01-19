@@ -285,6 +285,9 @@ else if (propertyTypeSelect.value === 'commercial') {
         longTermDeductionRate = Math.min((holdingYearsInt - 3) * 0.02 + 0.06, 0.3);
     }
 }
+
+ // ✅ **장기보유특별공제 금액 정상 반영**
+longTermDeductionAmount = profit * longTermDeductionRate;
     
 // 기본공제 적용 (과세표준에서 차감) --공용
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
