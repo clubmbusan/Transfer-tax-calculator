@@ -308,11 +308,10 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 65940000 }
 ];
 
-// ✅ 양도소득세 계산
+// ✅ 양도소득세 계산 (누진세율 단계별 적용)
 let rawTax = 0;
 let remainingProfit = taxableProfitAfterDeduction;
 
-// ✅ 누진세율 계산 방식 변경 (단계별 과세 적용)
 for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
 
@@ -323,8 +322,13 @@ for (let i = taxBrackets.length - 1; i >= 0; i--) {
     }
 }
 
-// ✅ 누진공제 적용
-const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction > bracket.limit)?.deduction || 0;
+// ✅ 올바른 누진공제 적용
+let applicableDeduction = 0;
+for (let i = 0; i < taxBrackets.length; i++) {
+    if (taxableProfitAfterDeduction > taxBrackets[i].limit) {
+        applicableDeduction = taxBrackets[i].deduction;
+    }
+}
 rawTax -= applicableDeduction;
 
 // ✅ 음수 방지 (예외 처리)
