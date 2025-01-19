@@ -308,25 +308,26 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 65940000 }
 ];
 
-// 양도소득세 계산
-let rawTax = 0; // 양도소득세
-let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+// ✅ 양도소득세 계산 (누진세율 단계별 적용)
+let rawTax = 0;
+let remainingProfit = taxableProfitAfterDeduction;
+let applicableDeduction = 0;
 
-for (let i = 0; i < taxBrackets.length; i++) {
+for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
-    const previousLimit = i === 0 ? 0 : taxBrackets[i - 1].limit; // 이전 구간의 상한
 
-    // 현재 구간에서 남은 금액 계산
-    if (remainingProfit <= 0) break; // 남은 금액이 없으면 종료
-    const taxableAmount = Math.min(bracket.limit - previousLimit, remainingProfit); // 현재 구간에서 과세할 금액
-    const taxForBracket = taxableAmount * bracket.rate; // 현재 구간의 세금 계산
-    rawTax += taxForBracket; // 세금 누적
-    remainingProfit -= taxableAmount; // 남은 금액 갱신
+    if (remainingProfit > bracket.limit) {
+        rawTax += (remainingProfit - bracket.limit) * bracket.rate;
+        remainingProfit = bracket.limit;
+
+        // ✅ 마지막으로 적용된 세율의 공제액 저장
+        applicableDeduction = bracket.deduction;
+    }
 }
 
-// 누진공제 적용
-const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
+// ✅ 누진공제 적용
 rawTax -= applicableDeduction;
+rawTax = Math.max(0, rawTax); // 음수 방지
 
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
