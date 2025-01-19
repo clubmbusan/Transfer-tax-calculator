@@ -310,17 +310,22 @@ const taxBrackets = [
 
 // ✅ 양도소득세 계산
 let rawTax = 0;
-let applicableDeduction = 0;
+let remainingProfit = taxableProfitAfterDeduction;
 
+// ✅ 누진세율 계산 방식 변경 (단계별 과세 적용)
 for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
 
-    if (taxableProfitAfterDeduction > bracket.limit) {
-        rawTax = (taxableProfitAfterDeduction * bracket.rate) - bracket.deduction;
-        applicableDeduction = bracket.deduction;
-        break;
+    if (remainingProfit > bracket.limit) {
+        const taxableAmount = remainingProfit - bracket.limit;
+        rawTax += (taxableAmount * bracket.rate);
+        remainingProfit = bracket.limit;
     }
 }
+
+// ✅ 누진공제 적용
+const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction > bracket.limit)?.deduction || 0;
+rawTax -= applicableDeduction;
 
 // ✅ 음수 방지 (예외 처리)
 rawTax = Math.max(0, rawTax);
