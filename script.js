@@ -222,31 +222,37 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
-   // ✅ 기본 세율 및 중과세율 설정 (기존 코드 유지)
+  // ✅ 부동산 유형 가져오기
+const propertyType = propertyTypeSelect.value;
+
+// ✅ 변수 초기화 (순서 조정)
+const regulatedArea = document.getElementById('regulatedArea').value === 'yes'; // 조정대상지역 여부
+const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes'; // 1세대 1주택 여부
+const isMultiHouseOwner = document.getElementById('singleHouseExemption').value === 'no'; // 다주택 여부
+
+// ✅ 기본 세율 및 중과세율 설정 (기존 코드 유지)
 let taxRate = 0;
 let surcharge = 0;
 
-if (propertyTypeSelect.value === 'house') {
-    taxRate = regulatedArea ? 0.2 : 0.1; // 기본 세율: 조정대상지역은 20%, 비조정대상지역은 10%
-    surcharge = regulatedArea ? 0.1 : 0; // 중과세율: 조정대상지역은 추가 10%, 비조정대상지역은 0%
-} else if (propertyTypeSelect.value === 'landForest') {
-    taxRate = 0.15; // 기본 세율 15%
-} else if (propertyTypeSelect.value === 'unregistered') {
-    taxRate = 0.7; // 고정 세율 70%
-} else if (propertyTypeSelect.value === 'others') {
-    taxRate = 0.2; // 기타 권리는 고정 세율 20%
+if (propertyType === 'house') {
+    taxRate = regulatedArea ? 0.2 : 0.1; // ✅ 기본 세율: 조정대상지역 20%, 비조정대상지역 10%
+    surcharge = regulatedArea ? 0.1 : 0; // ✅ 중과세율: 조정대상지역 추가 10%, 비조정대상지역 없음
+} else if (propertyType === 'landForest') {
+    taxRate = 0.15; // ✅ 토지/임야 기본 세율 15%
+} else if (propertyType === 'unregistered') {
+    taxRate = 0.7; // ✅ 미등기 부동산 고정 세율 70%
+} else if (propertyType === 'others') {
+    taxRate = 0.2; // ✅ 기타 권리 고정 세율 20%
 }
-    
-    // ✅ 장기보유특별공제율 계산
+
+// ✅ 최종 적용된 세율 확인 (디버깅용)
+console.log(`부동산 유형: ${propertyType}, 기본 세율: ${taxRate}, 중과세율: ${surcharge}`);
+
+// ✅ 장기보유특별공제율 계산
 let longTermDeductionRate_House = 0;  // 주택 장기보유특별공제율
 let longTermDeductionRate_Business = 0;  // 사업용 건물/토지 장기보유특별공제율
 let longTermDeductionAmount_House = 0;
 let longTermDeductionAmount_Business = 0;
-
-const propertyType = propertyTypeSelect.value;
-const regulatedArea = document.getElementById('regulatedArea').value === 'yes';
-const singleHouseExemption = document.getElementById('singleHouseExemption').value === 'yes';
-const isMultiHouseOwner = document.getElementById('singleHouseExemption').value === 'no';
 
 // ✅ **1세대 1주택 장기보유특별공제 (최대 80%)**
 if (propertyType === 'house') {
@@ -299,6 +305,9 @@ if (propertyType === 'house' && singleHouseExemption) {
 // ✅ **기본공제 적용**
 const basicDeduction = propertyType !== 'unregistered' ? 2500000 : 0;
 let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0);
+
+// ✅ **디버깅을 위한 로그 출력**
+console.log(`과세표준 (기본공제 후): ${taxableProfitAfterDeduction}`);
 
 // 누진세율 구간 및 누진공제 설정
 const taxBrackets = [
