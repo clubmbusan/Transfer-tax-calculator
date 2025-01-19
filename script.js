@@ -310,12 +310,14 @@ const taxBrackets = [
 
 // ✅ 양도소득세 계산
 let rawTax = 0;
+let applicableDeduction = 0;
 
 for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
 
     if (taxableProfitAfterDeduction > bracket.limit) {
         rawTax = (taxableProfitAfterDeduction * bracket.rate) - bracket.deduction;
+        applicableDeduction = bracket.deduction;
         break;
     }
 }
