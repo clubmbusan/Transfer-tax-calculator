@@ -301,10 +301,11 @@ const taxBrackets = [
     { limit: 12000000, rate: 0.06, deduction: 0 },
     { limit: 46000000, rate: 0.15, deduction: 1080000 },
     { limit: 88000000, rate: 0.24, deduction: 5220000 },
-    { limit: 150000000, rate: 0.35, deduction: 14900000 },
+    { limit: 150000000, rate: 0.35, deduction: 14940000 },
     { limit: 300000000, rate: 0.38, deduction: 19400000 },
     { limit: 500000000, rate: 0.40, deduction: 25400000 },
-    { limit: Infinity, rate: 0.45, deduction: 45400000 }
+    { limit: 1000000000, rate: 0.42, deduction: 35400000 },
+    { limit: Infinity, rate: 0.45, deduction: 65400000 }
 ];
 
 // 양도소득세 계산
