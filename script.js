@@ -308,20 +308,19 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 65940000 }
 ];
 
-// 양도소득세 계산
-let rawTax = 0; // 양도소득세
-let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
+// ✅ 양도소득세 계산
+let rawTax = 0;
 
-for (let i = taxBrackets.length - 1; i >= 0; i--) { 
+for (let i = taxBrackets.length - 1; i >= 0; i--) {
     const bracket = taxBrackets[i];
 
     if (taxableProfitAfterDeduction > bracket.limit) {
         rawTax = (taxableProfitAfterDeduction * bracket.rate) - bracket.deduction;
-        break; // 정확한 세율 및 공제값 적용 후 종료
+        break;
     }
 }
 
-// 최소 0원 이하로 내려가지 않도록 조정
+// ✅ 음수 방지 (예외 처리)
 rawTax = Math.max(0, rawTax);
 
 // 부가세 계산
