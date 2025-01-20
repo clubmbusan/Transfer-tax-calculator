@@ -222,7 +222,7 @@ calculateButton.addEventListener('click', () => {
         return;
     }
 
-    // 기본 세율 및 장기보유특별공제율 계산(주택)
+    // 기본 세율 및 장기보유특별공제율 계산
 let taxRate = 0;
 let surcharge = 0;
 let longTermDeductionRate = 0;
@@ -292,11 +292,11 @@ longTermDeductionAmount = profit * longTermDeductionRate;
  // ✅ 기존 코드 수정 (과세표준 정상 반영)
  taxableProfit = profit - longTermDeductionAmount; // 공제 후 과세표준 반영
     
-// 기본공제 적용 (과세표준에서 차감) --공용
+// 기본공제 적용 (과세표준에서 차감)
 const basicDeduction = propertyTypeSelect.value !== 'unregistered' ? 2500000 : 0; // 미등기 부동산 기본공제 없음
 let taxableProfitAfterDeduction = Math.max(taxableProfit - basicDeduction, 0); // taxableProfit에서 기본공제를 차감
-
-// 누진세율 구간 및 누진공제 설정
+    
+// 2023년 개정된 누진세율표
 const taxBrackets = [
     { limit: 14000000, rate: 0.06, deduction: 0 },
     { limit: 50000000, rate: 0.15, deduction: 1260000 },
@@ -308,36 +308,32 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 65940000 }
 ];
 
-// ✅ 과세표준 설정 (기본공제 후)
-let taxableIncome = 229500000; // 사용자 입력값 (과세표준)
+ // 양도소득세 계산
+    let rawTax = 0; // 양도소득세
+    let remainingProfit = taxableProfitAfterDeduction; // 남은 과세표준
 
-// ✅ 양도소득세 계산 (단계별 세율 적용)
-let totalTax = 0;
+    for (let i = 0; i < taxBrackets.length; i++) {
+        const bracket = taxBrackets[i];
+        const previousLimit = i === 0 ? 0 : taxBrackets[i - 1].limit; // 이전 구간의 상한
 
-for (let i = taxBrackets.length - 1; i > 0; i--) {
-    if (taxableIncome > taxBrackets[i].limit) {
-        let taxableAmount = taxableIncome - taxBrackets[i].limit;
-        totalTax += taxableAmount * taxBrackets[i].rate;
-        taxableIncome = taxBrackets[i].limit; // 다음 단계로 이동
+        // 현재 구간에서 남은 금액 계산
+        if (remainingProfit <= 0) break; // 남은 금액이 없으면 종료
+        const taxableAmount = Math.min(bracket.limit - previousLimit, remainingProfit); // 현재 구간에서 과세할 금액
+        const taxForBracket = taxableAmount * bracket.rate; // 현재 구간의 세금 계산
+        rawTax += taxForBracket; // 세금 누적
+        remainingProfit -= taxableAmount; // 남은 금액 갱신
     }
-}
 
-// ✅ 누진공제 적용 (현재 과세표준이 속하는 구간)
-let applicableDeduction = 0;
-for (let i = 0; i < taxBrackets.length; i++) {
-    if (229500000 > taxBrackets[i].limit) {
-        applicableDeduction = taxBrackets[i].deduction;
-    }
-}
+    // 누진공제 적용
+    const applicableDeduction = taxBrackets.find(bracket => taxableProfitAfterDeduction <= bracket.limit)?.deduction || 0;
+    rawTax -= applicableDeduction;
 
-totalTax -= applicableDeduction;
-    
-// 부가세 계산
-const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
-const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
-const totalTax = rawTax + educationTax + ruralTax;
-
-// 결과 출력
+    // 부가세 계산
+    const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
+    const ruralTax = Math.floor(rawTax * 0.2); // 농어촌특별세 (20%)
+    const totalTax = rawTax + educationTax + ruralTax;
+  
+    // 결과 출력
 document.getElementById('result').innerHTML = `
     <h3>계산 결과</h3>
     <p>보유 기간: ${holdingYearsInt} 년</p>
@@ -351,6 +347,7 @@ document.getElementById('result').innerHTML = `
     <p>지방교육세: ${educationTax.toLocaleString()} 원</p>
     <p>농어촌특별세: ${ruralTax.toLocaleString()} 원</p>
     <p><strong>총 세금: ${totalTax.toLocaleString()} 원</strong></p>
-`;
- });   
-}); // DOMContentLoaded 끝
+        
+    `;
+    });
+  }); // DOMContentLoaded 끝
