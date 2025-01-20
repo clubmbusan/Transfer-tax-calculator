@@ -308,28 +308,29 @@ const taxBrackets = [
     { limit: Infinity, rate: 0.45, deduction: 65940000 }
 ];
 
-// ✅ 양도소득세 계산 (누진세율 단계별 적용)
-let rawTax = 0;
-let remainingProfit = taxableProfitAfterDeduction;
+// ✅ 과세표준 설정 (기본공제 후)
+let taxableIncome = 229500000; // 사용자 입력값 (과세표준)
 
-for (let i = taxBrackets.length - 1; i >= 0; i--) {
-    const bracket = taxBrackets[i];
+// ✅ 양도소득세 계산 (단계별 세율 적용)
+let totalTax = 0;
 
-    if (remainingProfit > bracket.limit) {
-        const taxableAmount = remainingProfit - bracket.limit;
-        rawTax += taxableAmount * bracket.rate;
-        remainingProfit = bracket.limit;  // 다음 단계로 이동
+for (let i = taxBrackets.length - 1; i > 0; i--) {
+    if (taxableIncome > taxBrackets[i].limit) {
+        let taxableAmount = taxableIncome - taxBrackets[i].limit;
+        totalTax += taxableAmount * taxBrackets[i].rate;
+        taxableIncome = taxBrackets[i].limit; // 다음 단계로 이동
     }
 }
 
-// ✅ 누진공제 적용
+// ✅ 누진공제 적용 (현재 과세표준이 속하는 구간)
 let applicableDeduction = 0;
 for (let i = 0; i < taxBrackets.length; i++) {
-    if (taxableProfitAfterDeduction > taxBrackets[i].limit) {
+    if (229500000 > taxBrackets[i].limit) {
         applicableDeduction = taxBrackets[i].deduction;
     }
 }
-rawTax -= applicableDeduction;
+
+totalTax -= applicableDeduction;
     
 // 부가세 계산
 const educationTax = Math.floor(rawTax * 0.1); // 지방교육세 (10%)
