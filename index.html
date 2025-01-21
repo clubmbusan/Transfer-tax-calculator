@@ -35,6 +35,20 @@
                 </select>
             </div>
 
+             <!-- 감면율 선택 (기본적으로 숨김) -->
+    <div id="exemptionSection" style="display: none;">
+        <label for="exemptionRate">감면율 선택:</label>
+        <select id="exemptionRate">
+            <option value="0">감면 없음</option>
+            <option value="50">창업 중소기업 감면 (50%)</option>
+            <option value="100">창업 중소기업 감면 (100%)</option>
+            <option value="10">공익사업 감면 (10%)</option>
+            <option value="40">공익사업 감면 (40%)</option>
+            <option value="100">공익사업 감면 (100%)</option>
+            <option value="100">농지 대토 감면 (100%)</option>
+        </select>
+    </div>
+            
             <!-- 취득일 입력 -->
 <label for="acquisitionDate">취득일:</label>
 <input type="date" id="acquisitionDate">
